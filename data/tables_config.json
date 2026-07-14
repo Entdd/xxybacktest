@@ -1,0 +1,202 @@
+{
+    "trading_days": {
+        "partition_by": null,
+        "schema": {
+            "date": "TIMESTAMP",
+            "market_code": "VARCHAR"
+        }
+    },
+    "daily_bar": {
+        "partition_by": "year",
+        "schema": {
+            "instrument": "VARCHAR",
+            "name": "VARCHAR",
+            "date": "TIMESTAMP",
+            "open": "DOUBLE",
+            "high": "DOUBLE",
+            "low": "DOUBLE",
+            "close": "DOUBLE",
+            "pre_close": "DOUBLE",
+            "volume": "BIGINT",
+            "amount": "DOUBLE",
+            "change_ratio": "DOUBLE",
+            "upper_limit": "DOUBLE",
+            "lower_limit": "DOUBLE",
+            "turn": "DOUBLE",
+            "adjust_factor": "DOUBLE",
+            "deal_number": "INTEGER"
+        }
+    },
+    "index_bar": {
+        "partition_by": "year",
+        "schema": {
+            "instrument": "VARCHAR",
+            "name": "VARCHAR",
+            "date": "TIMESTAMP",
+            "open": "DOUBLE",
+            "high": "DOUBLE",
+            "low": "DOUBLE",
+            "close": "DOUBLE",
+            "pre_close": "DOUBLE",
+            "volume": "BIGINT",
+            "amount": "DOUBLE",
+            "change_ratio": "DOUBLE"
+        }
+    },
+    "stock_status": {
+        "partition_by": "year",
+        "schema": {
+            "instrument": "VARCHAR",
+            "date": "TIMESTAMP",
+            "suspended": "TINYINT",
+            "st_status": "TINYINT",
+            "price_limit_status": "TINYINT",
+            "exdr": "TINYINT",
+            "is_risk_warning": "TINYINT",
+            "name": "VARCHAR",
+            "list_days": "INTEGER",
+            "list_sector": "INTEGER"
+        }
+    },
+    "basic_info": {
+        "partition_by": "year",
+        "schema": {
+            "instrument": "VARCHAR",
+            "name": "VARCHAR",
+            "date": "TIMESTAMP",
+            "list_days": "INTEGER",
+            "list_sector": "INTEGER",
+            "st_status": "INTEGER"
+        }
+    },
+    "valuation": {
+        "partition_by": "year",
+        "schema": {
+            "instrument": "VARCHAR",
+            "date": "TIMESTAMP",
+            "total_market_cap": "DOUBLE",
+            "float_market_cap": "DOUBLE",
+            "pe_ttm": "DOUBLE",
+            "pb": "DOUBLE"
+        }
+    },
+    "dividend": {
+        "partition_by": null,
+        "schema": {
+            "instrument": "VARCHAR",
+            "name": "VARCHAR",
+            "date": "TIMESTAMP",
+            "register_date": "TIMESTAMP",
+            "ex_date": "TIMESTAMP",
+            "bonus_rate": "DOUBLE",
+            "conversed_rate": "DOUBLE",
+            "cash_before_tax": "DOUBLE",
+            "cash_after_tax": "DOUBLE"
+        }
+    },
+    "simulation_accounts": {
+        "partition_by": null,
+        "date_column": "created_at",
+        "unique_keys": [
+            "account_id"
+        ],
+        "source_folder": "simulation_accounts",
+        "schema": {
+            "account_id": {
+                "type": "str",
+                "desc": ""
+            },
+            "name": {
+                "type": "str",
+                "desc": ""
+            },
+            "initialize_code": {
+                "type": "str",
+                "desc": ""
+            },
+            "handle_data_code": {
+                "type": "str",
+                "desc": ""
+            },
+            "initial_cash": {
+                "type": "int64",
+                "desc": ""
+            },
+            "start_date": {
+                "type": "str",
+                "desc": ""
+            },
+            "data_path": {
+                "type": "str",
+                "desc": ""
+            },
+            "status": {
+                "type": "str",
+                "desc": ""
+            },
+            "asset_type": {
+                "type": "str",
+                "desc": ""
+            },
+            "benchmark": {
+                "type": "str",
+                "desc": ""
+            },
+            "created_at": {
+                "type": "datetime64[us]",
+                "desc": ""
+            },
+            "updated_at": {
+                "type": "str",
+                "desc": ""
+            },
+            "account_type": {
+                "type": "str",
+                "desc": ""
+            },
+            "live_account_id": {
+                "type": "Int32",
+                "desc": ""
+            },
+            "qmt_path": {
+                "type": "Int32",
+                "desc": ""
+            },
+            "trigger_cron": {
+                "type": "str",
+                "desc": ""
+            },
+            "execution_mode": {
+                "type": "str",
+                "desc": ""
+            },
+            "rebalance_interval": {
+                "type": "int64",
+                "desc": ""
+            }
+        }
+    },
+    "news_sentiment": {
+        "partition_by": null,
+        "date_column": "date",
+        "unique_keys": [
+            "date",
+            "instrument"
+        ],
+        "source_folder": "news_sentiment",
+        "schema": {
+            "date": {
+                "type": "datetime64[us]",
+                "desc": ""
+            },
+            "instrument": {
+                "type": "str",
+                "desc": ""
+            },
+            "value": {
+                "type": "float64",
+                "desc": ""
+            }
+        }
+    }
+}

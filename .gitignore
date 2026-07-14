@@ -1,0 +1,34 @@
+__pycache__/
+*.egg-info/
+*.pyc
+*.pyo
+.DS_Store
+
+# Data & cache
+data/daily_bar/
+data/stock_status/
+data/index_bar/
+data/trading_days/
+data/basic_info/
+data/valuation/
+data/dividend/
+data/daily_fund/
+data/fund_dividend/
+data/fund_split/
+data/simulation_results/
+data/factor_analysis/
+data/live/
+data/news_sentiment/
+data/news_sentiment_cache/
+*.parquet
+!tests/**/*.parquet
+
+# IDE
+.vscode/
+.claude/
+
+# Python
+*.log
+.pytest_cache/
+dist/
+build/

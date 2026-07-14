@@ -1,0 +1,1107 @@
+{% extends "base.html" %}
+
+{% block title %}API 文档 - 模拟交易系统{% endblock %}
+
+{% block extra_css %}
+<style>
+    .doc-layout {
+        display: block;
+        position: relative;
+    }
+
+    .doc-sidebar {
+        position: fixed;
+        top: 100px;
+        right: 40px;
+        width: 240px;
+        background: white;
+        border-radius: 10px;
+        padding: 16px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        max-height: 80vh;
+        overflow-y: auto;
+        z-index: 100;
+    }
+
+    .doc-sidebar h3 {
+        font-size: 13px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 10px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #f0f0f0;
+        position: sticky;
+        top: 0;
+        background: white;
+        z-index: 1;
+    }
+
+    .doc-sidebar ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .doc-sidebar li {
+        margin-bottom: 2px;
+    }
+
+    .doc-sidebar a {
+        display: block;
+        padding: 5px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        color: #666;
+        text-decoration: none;
+        transition: all 0.15s;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .doc-sidebar a:hover {
+        background: #f5f7fa;
+        color: #667eea;
+    }
+
+    .doc-sidebar a.toc-h2 {
+        padding-left: 16px;
+    }
+
+    .doc-sidebar a.toc-h3 {
+        padding-left: 32px;
+    }
+
+    .doc-sidebar a.toc-h4 {
+        padding-left: 48px;
+    }
+
+    .doc-sidebar a.active {
+        color: #ff6b6b;
+        font-weight: 600;
+        background: #fff5f5;
+    }
+
+    .doc-content {
+        background: white;
+        border-radius: 8px;
+        padding: 32px 36px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        line-height: 1.7;
+        color: #333;
+        margin-right: 280px;
+    }
+
+    .doc-content h2 {
+        font-size: 22px;
+        font-weight: 600;
+        color: #222;
+        margin: 36px 0 16px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #667eea;
+    }
+
+    .doc-content h2:first-child {
+        margin-top: 0;
+    }
+
+    .doc-content h3 {
+        font-size: 17px;
+        font-weight: 600;
+        color: #333;
+        margin: 28px 0 12px;
+    }
+
+    .doc-content h4 {
+        font-size: 15px;
+        font-weight: 600;
+        color: #444;
+        margin: 20px 0 10px;
+    }
+
+    .doc-content p {
+        margin: 10px 0;
+        color: #444;
+    }
+
+    .doc-content code {
+        background: #f5f7fa;
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-family: 'SF Mono', Monaco, Consolas, monospace;
+        font-size: 13px;
+        color: #c7254e;
+    }
+
+    .doc-content pre {
+        background: #282c34;
+        color: #abb2bf;
+        padding: 16px 20px;
+        border-radius: 6px;
+        overflow-x: auto;
+        font-size: 13px;
+        line-height: 1.6;
+        margin: 14px 0;
+    }
+
+    .doc-content pre code {
+        background: transparent;
+        padding: 0;
+        color: inherit;
+        font-size: inherit;
+    }
+
+    .doc-content table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 14px 0;
+        font-size: 13px;
+    }
+
+    .doc-content th,
+    .doc-content td {
+        border: 1px solid #e8e8e8;
+        padding: 10px 14px;
+        text-align: left;
+    }
+
+    .doc-content th {
+        background: #f8f9fa;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .doc-content tr:nth-child(even) {
+        background: #fafbfc;
+    }
+
+    .doc-content ul, .doc-content ol {
+        margin: 10px 0;
+        padding-left: 24px;
+    }
+
+    .doc-content li {
+        margin: 6px 0;
+    }
+
+    .doc-content .highlight-box {
+        background: #f0f5ff;
+        border-left: 4px solid #667eea;
+        padding: 14px 18px;
+        border-radius: 0 6px 6px 0;
+        margin: 14px 0;
+    }
+
+    .doc-content .warn-box {
+        background: #fff7e6;
+        border-left: 4px solid #faad14;
+        padding: 14px 18px;
+        border-radius: 0 6px 6px 0;
+        margin: 14px 0;
+    }
+
+    .doc-content .endpoint {
+        display: inline-block;
+        background: #e6f7e6;
+        color: #52c41a;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 600;
+        margin-right: 6px;
+    }
+
+    .doc-content .endpoint.post {
+        background: #fff1f0;
+        color: #ff4d4f;
+    }
+
+    .doc-content .endpoint.delete {
+        background: #fff1f0;
+        color: #ff4d4f;
+    }
+
+    @media (max-width: 1100px) {
+        .doc-sidebar {
+            display: none;
+        }
+        .doc-content {
+            margin-right: 0;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="doc-layout">
+    <article class="doc-content">
+        <h2 id="overview">系统概述</h2>
+        <p><strong>xxybacktest</strong> 是一套量化策略从研发到每日自动运行的完整闭环。用户写一次策略代码，注册为模拟账户后，系统每天自动重跑回测、更新净值曲线、生成当日交易信号。打开 Web 界面就能看到"今天该买什么卖什么"，直接跟单操作。</p>
+
+        <h3>核心功能</h3>
+        <ul>
+            <li><strong>策略回测</strong>：基于历史数据验证策略表现</li>
+            <li><strong>模拟账户</strong>：将策略注册为每日自动运行的模拟交易账户</li>
+            <li><strong>实盘交易</strong>：对接 QMT，策略信号自动转化为真实委托下单</li>
+            <li><strong>因子分析</strong>：一条 SQL 提交因子，系统每日算 IC / 分组收益 / 多空曲线，看板监控</li>
+            <li><strong>定时任务</strong>：灵活调度数据更新、策略重跑等任意脚本</li>
+            <li><strong>Web 可视化</strong>：策略净值、持仓、信号、因子绩效一目了然</li>
+        </ul>
+
+        <h3>架构简图</h3>
+        <pre><code>xxy-sim 启动
+└── Flask (port 5000)
+    ├── /              ← 账户列表（模拟+实盘）
+    ├── /account/&lt;id&gt;  ← 账户详情（净值曲线、持仓、信号）
+    ├── /factors       ← 因子绩效看板（列表）
+    ├── /factors/&lt;id&gt;  ← 因子详情（年度IC、分组收益、净值曲线）
+    ├── /tasks         ← 定时任务管理（含实盘调度）
+    └── /docs          ← API 文档（本页）
+
+APScheduler（后台）
+    ├── builtin_run_simulation  ← 内置：每日模拟交易重跑
+    ├── builtin_run_factors     ← 内置：每日因子分析全量重跑
+    ├── live_&lt;account_id&gt;      ← 实盘：定时触发策略下单（QMT）
+    ├── task_数据更新            ← 用户注册：数据更新脚本
+    └── task_xxx                 ← 用户注册：任意脚本
+
+实盘链路
+    APScheduler → live/runner.py → QMTTrader → xtquant → 真实委托</code></pre>
+
+        <h2 id="quickstart">快速开始</h2>
+
+        <h3>安装</h3>
+        <pre><code># 在 conda 环境中安装
+conda activate vnpy
+cd D:/Desktop/github汇总/xxybacktest
+pip install -e .</code></pre>
+
+        <h3>启动服务</h3>
+        <pre><code># 方式一：使用快捷脚本
+python run_simulation.py --data ./data --time 22:00
+
+# 方式二：使用安装后的命令
+xxy-sim --data ./data --time 22:00</code></pre>
+
+        <table>
+            <tr><th>参数</th><th>说明</th><th>默认值</th></tr>
+            <tr><td><code>--data</code></td><td>数据目录路径</td><td><code>./data</code></td></tr>
+            <tr><td><code>--time</code></td><td>每日模拟交易触发时间（HH:MM）</td><td><code>22:00</code></td></tr>
+            <tr><td><code>--factor-time</code></td><td>每日因子分析重跑时间（HH:MM）。因子分析依赖当天行情入库，应晚于 <code>--time</code></td><td>比 <code>--time</code> 晚 30 分钟</td></tr>
+        </table>
+
+        <div class="highlight-box">
+            启动成功后，打开浏览器访问 <code>http://localhost:5000</code>
+        </div>
+
+        <h2 id="backtest">回测用法</h2>
+
+        <h3>编写策略代码</h3>
+        <p>策略由两个函数组成：<code>initialize</code> 和 <code>handle_data</code>。</p>
+
+        <pre><code>from xxybacktest.simulation import submit
+
+def initialize(context):
+    """初始化函数，策略注册时执行一次"""
+    # 加载历史数据、设置参数等
+    pass
+
+def handle_data(context):
+    """每日调仓函数，每天收盘后执行一次"""
+    # 选股、调仓等逻辑
+    # 示例：全仓买入
+    context.order_target_percent("000001.SZ", 1.0)</code></pre>
+
+        <h3>运行单次回测</h3>
+        <pre><code>from xxybacktest.backtest import run_backtest
+
+context = run_backtest(
+    initialize=initialize,
+    handle_data=handle_data,
+    start_date="2024-01-01",
+    end_date="2024-12-31",
+    capital=100000,          # 初始资金 10 万
+    data_path="./data",      # xxydb 数据目录
+    asset_type="stock",      # 'stock' 或 'fund'
+    benchmark="000001.SH",   # 基准指数
+    plot=True,               # 是否展示回测曲线
+)</code></pre>
+
+        <table>
+            <tr><th>参数</th><th>说明</th><th>默认值</th></tr>
+            <tr><td><code>initialize</code></td><td>初始化函数 <code>callable(context)</code></td><td>必填</td></tr>
+            <tr><td><code>handle_data</code></td><td>策略主函数 <code>callable(context)</code>，如果为 None 需在 initialize 中自行注册 run_daily</td><td>None</td></tr>
+            <tr><td><code>start_date</code></td><td>回测起始日 'YYYY-MM-DD'</td><td>必填</td></tr>
+            <tr><td><code>end_date</code></td><td>回测结束日 'YYYY-MM-DD'</td><td>必填</td></tr>
+            <tr><td><code>capital</code></td><td>初始资金</td><td>1000000</td></tr>
+            <tr><td><code>data_path</code></td><td>xxydb 数据目录</td><td>./data</td></tr>
+            <tr><td><code>asset_type</code></td><td>资产类型：'stock'（股票）或 'fund'（基金）</td><td>stock</td></tr>
+            <tr><td><code>benchmark</code></td><td>基准指数代码</td><td>000001.SH</td></tr>
+            <tr><td><code>plot</code></td><td>是否在 Notebook 中展示回测曲线和绩效指标</td><td>True</td></tr>
+        </table>
+
+        <h3>回测返回的 context 对象</h3>
+        <p><code>run_backtest</code> 返回的 <code>context</code> 包含完整的回测结果：</p>
+
+        <table>
+            <tr><th>属性</th><th>说明</th></tr>
+            <tr><td><code>context.order</code></td><td>订单 DataFrame（date, instrument, name, volume, side, status, price, cost）</td></tr>
+            <tr><td><code>context.pos</code></td><td>持仓 DataFrame（date, instrument, name, volume, ratio, return, close, avg_cost）</td></tr>
+            <tr><td><code>context.portfolio</code></td><td>组合资金状态（cash, total_value, positions_value, positions）</td></tr>
+            <tr><td><code>context.performance</code></td><td>绩效指标（returns, turnover, win_ratio, trade_num 等）</td></tr>
+            <tr><td><code>context.logs.order_list</code></td><td>原始订单对象列表</td></tr>
+            <tr><td><code>context.logs.trade_list</code></td><td>成交订单对象列表</td></tr>
+        </table>
+
+        <h2 id="strategy-api">策略编程接口</h2>
+
+        <h3>Context 对象核心属性</h3>
+        <table>
+            <tr><th>属性</th><th>说明</th></tr>
+            <tr><td><code>context.current_dt</code></td><td>当前日期时间（datetime 对象）</td></tr>
+            <tr><td><code>context.previous_date</code></td><td>上一个交易日日期字符串 'YYYY-MM-DD'</td></tr>
+            <tr><td><code>context.portfolio.cash</code></td><td>可用现金</td></tr>
+            <tr><td><code>context.portfolio.total_value</code></td><td>总资产（现金 + 持仓市值）</td></tr>
+            <tr><td><code>context.portfolio.positions</code></td><td>持仓字典 {code: Position}。Position 属性：amount（总数量）、enable_amount（可卖数量）、cost_basis（持仓均价）、last_sale_price（最新价）、total_value（持仓市值）</td></tr>
+            <tr><td><code>context.trade.benchmark</code></td><td>基准指数代码</td></tr>
+            <tr><td><code>context.trade.asset_type</code></td><td>资产类型 'stock' / 'fund'</td></tr>
+            <tr><td><code>context.g</code></td><td>用户全局变量字典（可存放策略状态）</td></tr>
+        </table>
+
+        <h3>下单函数</h3>
+        <p>所有下单函数均已绑定到 context，在策略中直接通过 <code>context.xxx()</code> 调用。</p>
+
+        <table>
+            <tr><th>函数</th><th>说明</th></tr>
+            <tr>
+                <td><code>context.order(security, amount)</code></td>
+                <td>按数量下单。amount > 0 买入，amount < 0 卖出，0 不下单</td>
+            </tr>
+            <tr>
+                <td><code>context.order_buy(security, amount)</code></td>
+                <td>买入指定数量（股）</td>
+            </tr>
+            <tr>
+                <td><code>context.order_sell(security, amount)</code></td>
+                <td>卖出指定数量（股）</td>
+            </tr>
+            <tr>
+                <td><code>context.order_value(security, value)</code></td>
+                <td>按金额下单。value > 0 买入对应金额，value < 0 卖出对应金额</td>
+            </tr>
+            <tr>
+                <td><code>context.order_target_value(security, value)</code></td>
+                <td>调仓至目标市值。value=0 表示清仓</td>
+            </tr>
+            <tr>
+                <td><code>context.order_target_percent(security, percent)</code></td>
+                <td>按总资产百分比调仓。percent 为 0.0~1.0 小数，如 0.1 表示 10%</td>
+            </tr>
+            <tr>
+                <td><code>context.inout_cash(amount)</code></td>
+                <td>出入金。正数入金，负数出金</td>
+            </tr>
+        </table>
+
+        <h3>数据接口</h3>
+        <pre><code># 获取最新价格（回测/实盘统一接口，返回 float 或 None）
+price = context.get_price(security)
+#   回测：按当前时间返回模拟撮合价（盘前=上一日close，盘中=当日open，盘后=当日close）
+#   实盘：返回 QMT 实时 tick 价
+#   停牌 / 无行情时返回 None，使用前需判空
+price = context.get_price("000001.SZ")
+if price:
+    context.order_target_percent("000001.SZ", 0.10)
+
+# 获取历史行情（防未来数据：只回溯到上一交易日，不含当日）
+his = context.history(instruments, fields=None, bar_count=1)
+#   instruments: 股票代码列表，如 ["000001.SZ", "000002.SZ"]
+#   fields:      字段列表，默认 ["close"]；可选 open/high/low/close/pre_close/volume/amount/vwap
+#   bar_count:   回溯的K线数量
+#   返回:        dict {code: np.recarray}，按属性访问列
+
+his = context.history(["000001.SZ"], ["close", "volume"], 10)
+arr = his.get("000001.SZ")          # 先判空，可能返回空 dict
+if arr is not None:
+    last_close = arr.close[-1]      # 最近一根（上一交易日）收盘价
+    closes = arr.close              # float64 数组
+    dates = arr.date                # 日期字符串数组</code></pre>
+
+        <h3>注册每日事件</h3>
+        <pre><code>def initialize(context):
+    # 注册 strategy 函数每天 9:30 执行
+    context.run_daily(strategy, "9:30")
+
+def strategy(context):
+    # 每日策略逻辑
+    print(context.current_dt)</code></pre>
+
+        <h2 id="simulation">账户管理</h2>
+
+        <h3>注册模拟账户</h3>
+        <pre><code>from xxybacktest.simulation import submit
+
+account_id = submit(
+    name="我的策略",              # 账户名称
+    initialize=initialize,      # 初始化函数
+    handle_data=handle_data,    # 调仓函数
+    capital=100000,             # 初始资金（10万）
+    start_date="2024-01-01",    # 策略开始日期
+    data_path="./data",         # 数据目录
+    asset_type="stock",         # 资产类型
+    benchmark="000001.SH",      # 基准指数
+    run_now=True,               # 注册后立即跑一次回测
+)
+
+print(f"账户已注册: {account_id}")</code></pre>
+
+        <h3>注册实盘账户</h3>
+        <pre><code>from xxybacktest.simulation import submit
+
+account_id = submit(
+    name="茅台实盘策略",
+    initialize=initialize,
+    handle_data=handle_data,
+    account_type="live",                    # 指定为实盘账户
+    live_account_id="8881686799",           # QMT 资金账号
+    qmt_path=r"D:\\国金证券QMT交易端\\userdata_mini",
+    trigger_cron="30 9 * * *",              # 每天 9:30 触发调仓
+    asset_type="stock",
+    data_path="./data",
+)
+
+print(f"实盘账户已注册: {account_id}")</code></pre>
+
+        <div class="warn-box">
+            <strong>注意：</strong>实盘注册时会自动连接 QMT 读取总资产作为 <code>initial_cash</code>，你传入的 <code>capital</code> 会被覆盖。
+        </div>
+
+        <h3>submit 参数表</h3>
+        <table>
+            <tr><th>参数</th><th>说明</th><th>默认值</th></tr>
+            <tr><td><code>name</code></td><td>账户名称（展示用）</td><td>必填</td></tr>
+            <tr><td><code>initialize</code></td><td>初始化函数</td><td>必填</td></tr>
+            <tr><td><code>handle_data</code></td><td>策略主函数（可选）</td><td>None</td></tr>
+            <tr><td><code>capital</code></td><td>初始资金（实盘会被 QMT 总资产覆盖）</td><td>100000</td></tr>
+            <tr><td><code>start_date</code></td><td>策略开始日期 'YYYY-MM-DD'，默认今天</td><td>None</td></tr>
+            <tr><td><code>data_path</code></td><td>数据目录</td><td>./data</td></tr>
+            <tr><td><code>asset_type</code></td><td>'stock' 或 'fund'</td><td>stock</td></tr>
+            <tr><td><code>benchmark</code></td><td>基准指数代码</td><td>000001.SH</td></tr>
+            <tr><td><code>run_now</code></td><td>注册后立即运行回测（仅模拟账户）</td><td>False</td></tr>
+            <tr><td><code>account_type</code></td><td>'sim'（模拟）或 'live'（实盘）</td><td>sim</td></tr>
+            <tr><td><code>live_account_id</code></td><td>QMT 资金账号（实盘必填）</td><td>None</td></tr>
+            <tr><td><code>qmt_path</code></td><td>QMT 客户端安装目录（实盘必填）</td><td>None</td></tr>
+            <tr><td><code>trigger_cron</code></td><td>实盘定时触发 cron 表达式</td><td>30 9 * * *</td></tr>
+            <tr><td><code>execution_mode</code></td><td>执行模式：'daily' 或 'periodic'</td><td>daily</td></tr>
+            <tr><td><code>rebalance_interval</code></td><td>调仓周期天数（periodic 模式生效）</td><td>1</td></tr>
+        </table>
+
+        <h3>账户管理</h3>
+        <pre><code>from xxybacktest.simulation import (
+    list_accounts, get_account,
+    pause, resume, delete, update_account,
+    run_single, run_all,
+    get_account_nav, get_account_positions, get_account_orders,
+)
+
+# 列出所有账户（含模拟+实盘）
+accounts = list_accounts(data_path="./data")
+
+# 只列运行中账户
+running = list_accounts(status='running', data_path="./data")
+
+# 查看单个账户详情
+info = get_account(account_id, data_path="./data")
+
+# 暂停账户（暂停后不再参与每日重跑/调仓）
+pause(account_id, data_path="./data")
+
+# 恢复账户
+resume(account_id, data_path="./data")
+
+# 删除账户及其所有历史数据（实盘会同步清理 APScheduler job 和 live_schedule.json）
+delete(account_id, data_path="./data")
+
+# 修改账户策略或配置（修改后下次定时触发自动生效，无需重启）
+def initialize(ctx):
+    ctx.g.setdefault('x', 1)
+
+update_account(
+    account_id,
+    initialize=initialize,
+    trigger_cron="30 10 * * *",
+    data_path="./data",
+)
+
+# 手动重跑单个账户
+result = run_single(account_id, end_date="2024-12-31", data_path="./data")
+
+# 手动重跑所有运行中账户
+results = run_all(end_date="2024-12-31", data_path="./data")
+
+# 查询净值、持仓、订单
+nav_df = get_account_nav(account_id, data_path="./data")
+pos_df = get_account_positions(account_id, date="2024-12-31", data_path="./data")
+order_df = get_account_orders(account_id, limit=100, data_path="./data")</code></pre>
+
+        <h3>存储结构</h3>
+        <p>模拟交易和实盘账户的结果分别独立存储：</p>
+        <pre><code>data/simulation_results/accounts/   # 模拟交易
+  sim_001/daily_values.parquet
+  sim_001/positions.parquet
+  sim_001/orders.parquet
+
+data/live/accounts/                 # 实盘交易
+  live_001/daily_values.parquet
+  live_001/positions.parquet
+  live_001/orders.parquet</code></pre>
+
+        <h2 id="live-trading">实盘交易</h2>
+        <p>实盘账户通过 APScheduler 定时触发 <code>run_live()</code>，自动连接 QMT 执行策略并产生真实委托。策略代码与回测完全一致，无需修改。</p>
+
+        <h3>实盘执行流程</h3>
+        <ol>
+            <li>APScheduler 按 <code>trigger_cron</code> 触发 <code>run_live(account_id)</code></li>
+            <li>连接 QMT，读取当前持仓和总资产</li>
+            <li>从数据库加载最新策略源码，构建实盘 context</li>
+            <li>执行 <code>initialize</code>（首次）和 <code>handle_data</code></li>
+            <li>策略中的下单函数（如 <code>order_target_percent</code>）直接发往 QMT</li>
+            <li>保存调仓结果（净值、持仓、订单）到 <code>data/live/accounts/&lt;id&gt;/</code></li>
+            <li>持久化策略状态 <code>context.g</code> 到 <code>live_schedule.json</code></li>
+        </ol>
+
+        <h3>策略编写注意事项</h3>
+
+        <div class="warn-box">
+            <strong>关键规则：策略函数内部不要引用外部全局变量。</strong>
+            <code>run_live()</code> 用 <code>exec()</code> 在独立模块中加载策略源码，外部变量不可见。
+            所有配置应在函数内部硬编码，或通过 <code>context.g</code> 持久化存储。
+        </div>
+
+        <pre><code># 错误示范 ❌
+TARGET_PCT = 0.10  # 外部全局变量
+
+def handle_data(context):
+    context.order_target_percent("600519.SH", TARGET_PCT)  # NameError!
+
+# 正确示范 ✅
+def handle_data(context):
+    target_pct = 0.10  # 内部硬编码
+    context.order_target_percent("600519.SH", target_pct)
+
+# 或者用 context.g 持久化（推荐）✅
+def initialize(context):
+    context.g.setdefault("target_pct", 0.10)
+    context.g.setdefault("run_count", 0)
+
+def handle_data(context):
+    context.g["run_count"] += 1
+    context.order_target_percent("600519.SH", context.g["target_pct"])</code></pre>
+
+        <h3>策略状态持久化</h3>
+        <p><code>context.g</code> 支持基础类型（int、float、str、list、dict），每次 <code>run_live</code> 执行结束后自动保存到 <code>live_schedule.json</code>，下次执行前自动恢复。</p>
+        <pre><code># initialize 中初始化状态
+context.g.setdefault("signal", "hold")
+context.g.setdefault("positions", {})
+
+# handle_data 中读取和更新
+if context.g["signal"] == "buy":
+    context.order_target_percent("600519.SH", 0.10)
+    context.g["signal"] = "hold"</code></pre>
+
+        <h3>实盘交易函数</h3>
+        <p>实盘 context 上的交易函数与回测签名完全一致：</p>
+        <table>
+            <tr><th>函数</th><th>说明</th></tr>
+            <tr><td><code>context.order(security, amount)</code></td><td>按数量下单，自动转发到 QMT</td></tr>
+            <tr><td><code>context.order_target_percent(security, percent)</code></td><td>按总资产百分比调仓（推荐）</td></tr>
+            <tr><td><code>context.order_target_value(security, value)</code></td><td>调仓至目标市值</td></tr>
+            <tr><td><code>context.get_portfolio()</code></td><td>实时从 QMT 拉取最新资金概况，同时同步到 context.portfolio。返回 {'cash', 'frozen_cash', 'market_value', 'total_asset'}</td></tr>
+            <tr><td><code>context.get_account_positions()</code></td><td>实时从 QMT 拉取全部持仓，同时同步到 context.portfolio.positions。返回 {code: {'volume', 'can_sell_volume', 'cost_price', 'last_price', 'market_value'}}</td></tr>
+            <tr><td><code>context.get_price(security)</code></td><td>获取最新价（实盘=QMT 实时 tick，回测=模拟撮合价）。返回 float，停牌/无行情返回 None。与回测接口一致</td></tr>
+        </table>
+
+        <div class="highlight-box">
+            <strong>提示：</strong><code>get_portfolio()</code> 和 <code>get_account_positions()</code> 在每次 <code>handle_data</code> 结束后会自动调用一次刷新 context。策略内部如需在盘中获取最新资金和持仓（如下单前校验），可手动调用。
+        </div>
+
+        <h3>手动触发实盘调仓</h3>
+        <p>除了定时自动触发，也可随时手动执行一次实盘调仓（适合测试或补跑）：</p>
+        <pre><code>from xxybacktest.live.runner import run_live
+
+# 立即对指定实盘账户执行一次调仓
+result = run_live("live_20260522_111635_7b6e30", data_path="./data")
+# result: {"account_id": ..., "status": "success"|"error"|"skipped", ...}</code></pre>
+        <div class="warn-box">
+            <strong>注意：</strong>手动调用 <code>run_live()</code> 时如果 QMT 未登录，会直接抛出异常。建议先在 Web 界面确认账户状态为"运行中"且 QMT 已登录。
+        </div>
+
+        <h3>实盘账户管理</h3>
+        <p>实盘账户的暂停、恢复、删除与模拟账户共用同一套 API，但行为上有差异：</p>
+        <table>
+            <tr><th>操作</th><th>模拟账户</th><th>实盘账户</th></tr>
+            <tr>
+                <td><code>pause(account_id)</code></td>
+                <td>暂停每日回测重跑</td>
+                <td>暂停 APScheduler 定时触发，不再向 QMT 发送委托</td>
+            </tr>
+            <tr>
+                <td><code>resume(account_id)</code></td>
+                <td>恢复回测重跑</td>
+                <td>恢复定时触发，下次 cron 时间点自动调仓</td>
+            </tr>
+            <tr>
+                <td><code>delete(account_id)</code></td>
+                <td>删除账户数据</td>
+                <td>同步清理：APScheduler job、live_schedule.json、data/live/accounts/&lt;id&gt;/、任务日志</td>
+            </tr>
+        </table>
+        <pre><code>from xxybacktest.simulation import pause, resume, delete
+
+# 暂停实盘（立即停止自动调仓，已有持仓不受影响）
+pause("live_20260522_111635_7b6e30", data_path="./data")
+
+# 恢复实盘
+resume("live_20260522_111635_7b6e30", data_path="./data")
+
+# 删除实盘（会同步清理 QMT 调度任务，谨慎操作）
+delete("live_20260522_111635_7b6e30", data_path="./data")</code></pre>
+
+        <h3>修改实盘策略（热更新）</h3>
+        <p><code>update_account()</code> 支持修改策略代码、cron 表达式、QMT 配置等，修改后下次定时触发自动生效，无需重启 <code>xxy-sim</code>。</p>
+        <pre><code>from xxybacktest.simulation import update_account
+
+# 修改策略代码（传入函数对象，自动提取源码）
+def initialize(ctx):
+    ctx.g.setdefault('target', 0.05)
+
+def handle_data(ctx):
+    ctx.order_target_percent('600519.SH', ctx.g['target'])
+
+update_account(
+    "live_20260522_111635_7b6e30",
+    initialize=initialize,
+    handle_data=handle_data,
+    data_path="./data",
+)
+
+# 修改触发时间
+update_account(
+    "live_20260522_111635_7b6e30",
+    trigger_cron="0 10 * * *",  # 改为 10:00
+    data_path="./data",
+)</code></pre>
+
+        <div class="highlight-box">
+            <code>trigger_cron</code> 修改后，如果 APScheduler 正在运行，会自动热更新调度时间，无需重启服务。
+        </div>
+
+        <h2 id="factor">因子分析</h2>
+        <p>因子分析模块让你用<strong>一条 SQL</strong> 提交一个因子，系统自动计算 IC / ICIR / 分组收益 / 多空曲线等绩效指标，并在 <code>/factors</code> 看板展示、每日自动更新。适合回放大量因子、持续监控因子绩效衰减。</p>
+
+        <div class="highlight-box">
+            <strong>两种用法，共用同一套计算引擎，口径永远一致：</strong><br>
+            ① <code>analyze_factor(...)</code> —— notebook 里即时分析，返回结果对象可画图，不落盘、一次性，用于探索调参。<br>
+            ② <code>submit_factor(...)</code> —— 提交入库，由每日定时任务全量重跑落盘，前端看板监控。
+        </div>
+
+        <h3>核心约定</h3>
+        <ul>
+            <li><strong>因子值来源</strong>：你的 SQL，必须返回 <code>date</code> / <code>instrument</code> / <code>value</code> 三列。</li>
+            <li><strong>收益口径</strong>：系统固定用<strong>次日开盘价 + 后复权</strong>算未来 N 日收益（<code>open(T+1)</code> 买入 → <code>open(T+1+N)</code> 卖出），零未来函数，最贴实盘。</li>
+            <li><strong>可交易过滤</strong>：系统自动剔除停牌 / ST / 涨跌停（次日无法成交的股票）。</li>
+            <li><strong>股票池 & 中性化</strong>：由你在 SQL 里自行控制（要成分股就 join 成分股表，要中性化就自己回归取残差 / 直接查已中性化的因子值）。</li>
+            <li><strong>方向判定</strong>：默认按 IC 符号自动判定（IC 为负=负向因子）。多空组合跟随方向：正向做多高分位、负向做多低分位，故负向因子多空年化也为正。</li>
+        </ul>
+
+        <h3>① 即时分析（notebook 探索）</h3>
+        <pre><code>from xxybacktest.factor import analyze_factor
+
+# 一条 SQL 定义因子，立即拿到绩效
+res = analyze_factor(
+    sql="SELECT date, instrument, close/pre_close-1 AS value "
+        "FROM daily_bar WHERE date >= '2023-01-01'",
+    data_path=r"D:\数据目录\data",
+    name="昨日涨幅",
+    periods=[1, 5, 10, 20],   # 未来 N 日收益
+    n_groups=10,              # 分组数
+    base_period=5,            # 分组/多空/汇总用哪个周期
+)
+
+res.summary()        # 打印 IC均值/ICIR/多空年化/胜率/换手/年度拆解
+res.plot()           # 四张图：累计IC / 多空净值 / 分组年化 / 分组净值
+res.plot_ic()        # 单独画累计 IC 曲线
+res.plot_groups()    # 单独画分组年化 + 分组净值
+res.metrics          # 原始指标 dict
+res.ic_series        # 逐日 IC 时序 DataFrame
+res.to_dict()        # 转 JSON（落盘/前端用的结构）</code></pre>
+
+        <p>因子逻辑可以直接写在 SQL 里，包括窗口函数。例如 5 日换手率均值：</p>
+        <pre><code>sql = """
+SELECT date, instrument,
+       avg(turn) OVER (PARTITION BY instrument ORDER BY date
+                       ROWS BETWEEN 4 PRECEDING AND CURRENT ROW) AS value
+FROM daily_bar WHERE date >= '2023-01-01'
+"""
+res = analyze_factor(sql, data_path=r"D:\数据目录\data", name="5日换手率", base_period=5)</code></pre>
+
+        <h3>② 提交入库（纳入每日监控）</h3>
+        <pre><code>from xxybacktest.factor import submit_factor
+
+factor_id = submit_factor(
+    name="EP因子",                    # 展示名（必填）
+    sql="SELECT date, instrument, ep AS value FROM ...",   # 因子SQL（必填）
+    category="价值",                  # 分类，列表页筛选用（必填）
+    data_path="./data",
+    periods=[1, 5, 10, 20],
+    n_groups=10,
+    base_period=5,
+    ic_method="rank",                # rank(Spearman) / normal(Pearson)
+    direction=None,                  # 不传按IC符号自动判定；也可指定 'long'/'short'
+    description="市盈率倒数",         # 可选说明
+    run_now=False,                   # True=提交后立即算一次；False=等定时任务
+)
+print(f"因子已登记: {factor_id}")</code></pre>
+
+        <h3>submit_factor 参数表</h3>
+        <table>
+            <tr><th>参数</th><th>说明</th><th>默认值</th></tr>
+            <tr><td><code>name</code></td><td>因子名称（展示）</td><td>必填</td></tr>
+            <tr><td><code>sql</code></td><td>因子 SQL，须返回 date/instrument/value</td><td>必填</td></tr>
+            <tr><td><code>category</code></td><td>分类（动量/价值/质量…）</td><td>必填</td></tr>
+            <tr><td><code>periods</code></td><td>未来收益周期列表</td><td><code>[1,5,10,20]</code></td></tr>
+            <tr><td><code>n_groups</code></td><td>分组数</td><td><code>10</code></td></tr>
+            <tr><td><code>base_period</code></td><td>分组/多空/汇总用的主周期</td><td><code>periods[0]</code></td></tr>
+            <tr><td><code>ic_method</code></td><td><code>rank</code> 或 <code>normal</code></td><td><code>rank</code></td></tr>
+            <tr><td><code>direction</code></td><td>因子方向，不传按 IC 符号自动判定</td><td><code>None</code></td></tr>
+            <tr><td><code>run_now</code></td><td>提交后立即算一次</td><td><code>False</code></td></tr>
+        </table>
+
+        <h3>因子管理</h3>
+        <pre><code>from xxybacktest.factor import (list_factors, get_factor,
+                                update_factor, delete_factor, run_single, run_all)
+
+list_factors(data_path="./data")              # 列出所有因子
+list_factors(data_path="./data", status="ok") # 只列已成功计算的
+get_factor(factor_id, data_path="./data")     # 查看单个因子定义
+update_factor(factor_id, data_path="./data", name="新名", category="质量")  # 改定义
+delete_factor(factor_id, data_path="./data")  # 删除因子及结果
+
+run_single(factor_id, data_path="./data")     # 手动重跑单个因子
+run_all(data_path="./data")                   # 手动全量重跑（并行）</code></pre>
+
+        <h3>每日自动更新</h3>
+        <p>启动 <code>xxy-sim</code> 后，因子分析会作为内置任务 <code>builtin_run_factors</code> 每日自动全量重跑。触发时间默认<strong>比模拟交易（<code>--time</code>）晚 30 分钟</strong>（因子分析依赖当天行情已入库），也可用 <code>--factor-time</code> 单独指定：</p>
+        <pre><code># 模拟交易 22:00 跑，因子分析 22:45 跑
+xxy-sim --data ./data --time 22:00 --factor-time 22:45
+
+# 不指定 --factor-time：因子分析默认 22:30（22:00 + 30 分钟）
+xxy-sim --data ./data --time 22:00</code></pre>
+        <div class="highlight-box">
+            提交过的因子会在每天定时触发时自动重算、刷新看板，无需手动干预。打开 <code>http://localhost:5000/factors</code> 即可查看所有因子的最新绩效。
+        </div>
+
+        <h3>绩效指标说明</h3>
+        <table>
+            <tr><th>指标</th><th>含义</th></tr>
+            <tr><td>IC 均值</td><td>因子值与未来收益的截面相关性均值，衡量因子整体有效性</td></tr>
+            <tr><td>ICIR</td><td>IC 均值 / IC 标准差 × 年化系数，衡量因子的稳定性（性价比）</td></tr>
+            <tr><td>IC 胜率</td><td>IC 为正（或负向因子为负）的截面日占比</td></tr>
+            <tr><td>多空年化</td><td>多头组减空头组的年化收益（方向跟随因子 direction）</td></tr>
+            <tr><td>多空夏普</td><td>多空组合的年化夏普比率</td></tr>
+            <tr><td>最大回撤</td><td>多空组合净值的最大回撤</td></tr>
+            <tr><td>换手</td><td>多头组相邻调仓期的成分股换手率</td></tr>
+            <tr><td>覆盖度</td><td>因子有值的可交易股票占全体可交易股票的比例</td></tr>
+        </table>
+
+        <h2 id="scheduler">定时任务</h2>
+        <p>系统使用 APScheduler 管理定时任务，支持<strong>热注册、热删除</strong>，无需重启服务。</p>
+
+        <h3>内置任务：每日模拟交易</h3>
+        <p>启动 <code>xxy-sim</code> 时自动注册，通过 <code>--time</code> 参数控制触发时间：</p>
+        <pre><code>xxy-sim --data ./data --time 22:00   # 每晚 22:00 自动重跑所有运行中账户
+xxy-sim --data ./data --time 15:30   # 收盘后 15:30 执行</code></pre>
+
+        <h3>注册自定义定时任务</h3>
+        <pre><code>from xxybacktest.simulation import schedule_task
+
+# 方式一：每天固定时间
+tid = schedule_task(
+    name="数据更新",
+    script="./data_renew.py",   # 脚本的绝对或相对路径
+    time="17:30",                # 每天 17:30 执行
+    data_path="./data",
+)
+
+# 方式二：cron 表达式
+tid = schedule_task(
+    name="季报数据",
+    script="./update_quarterly.py",
+    cron="0 10 1 1,4,7,10 *",    # 每季度第一天 10:00
+    data_path="./data",
+)</code></pre>
+
+        <table>
+            <tr><th>参数</th><th>说明</th></tr>
+            <tr><td><code>name</code></td><td>任务名称（展示用）</td></tr>
+            <tr><td><code>script</code></td><td>Python 脚本路径</td></tr>
+            <tr><td><code>time</code></td><td>每天固定时间，格式 HH:MM，与 cron 二选一</td></tr>
+            <tr><td><code>cron</code></td><td>标准 5 段 cron 表达式（分 时 日 月 周）</td></tr>
+            <tr><td><code>data_path</code></td><td>数据目录路径</td></tr>
+        </table>
+
+        <div class="warn-box">
+            <strong>注意：</strong><code>time</code> 和 <code>cron</code> 只能指定一个。相同 <code>name + script + cron</code> 的任务不会重复注册。
+        </div>
+
+        <h3>cron 表达式参考</h3>
+        <table>
+            <tr><th>需求</th><th>cron 表达式</th></tr>
+            <tr><td>每天 22:00</td><td><code>0 22 * * *</code></td></tr>
+            <tr><td>每天 17:30</td><td><code>30 17 * * *</code></td></tr>
+            <tr><td>工作日 9:00</td><td><code>0 9 * * 1-5</code></td></tr>
+            <tr><td>每周一 10:00</td><td><code>0 10 * * 1</code></td></tr>
+            <tr><td>每月 1 日 9:00</td><td><code>0 9 1 * *</code></td></tr>
+            <tr><td>每季度首日 10:00</td><td><code>0 10 1 1,4,7,10 *</code></td></tr>
+        </table>
+
+        <h2 id="web">Web 界面</h2>
+
+        <h3>账户列表页（/）</h3>
+        <ul>
+            <li>展示所有模拟+实盘账户的<strong>累计收益率、当日收益、最大回撤</strong></li>
+            <li>实盘账户卡片带红色"实盘"标签和红色左边框，与模拟账户区分</li>
+            <li>点击账户卡片进入详情页</li>
+            <li>支持<strong>策略组合</strong>：多选账户后按权重合成组合净值曲线</li>
+        </ul>
+
+        <h3>账户详情页（/account/&lt;id&gt;）</h3>
+        <ul>
+            <li><strong>净值走势</strong>：策略净值 + 基准指数 + 超额净值三条曲线</li>
+            <li><strong>计划交易</strong>：最新调仓信号（今天该买什么/卖什么）</li>
+            <li><strong>当前持仓</strong>：代码、名称、数量、成本、市值、占比、累计收益</li>
+            <li><strong>历史成交</strong>：带分页的完整交易记录</li>
+            <li><strong>操作按钮</strong>：暂停 / 恢复 / 删除账户</li>
+        </ul>
+
+        <h3>任务管理页（/tasks）</h3>
+        <ul>
+            <li>查看所有定时任务的<strong>名称、cron 表达式、下次执行时间、上次状态</strong>（含模拟重跑任务和实盘调仓任务）</li>
+            <li><strong>手动触发</strong>：立即执行一次任务</li>
+            <li><strong>查看日志</strong>：弹出窗口实时展示任务执行日志（3 秒轮询刷新）</li>
+            <li><strong>删除任务</strong>：用户注册的任务和实盘任务可删除，内置任务不可删除</li>
+        </ul>
+
+        <h2 id="http-api">HTTP API</h2>
+
+        <h3>账户数据接口</h3>
+        <table>
+            <tr><th>接口</th><th>方法</th><th>说明</th></tr>
+            <tr>
+                <td><code>/api/accounts</code></td>
+                <td><span class="endpoint">GET</span></td>
+                <td>获取所有账户列表（含最新净值、累计收益、当日收益）</td>
+            </tr>
+            <tr>
+                <td><code>/api/accounts/&lt;id&gt;/nav</code></td>
+                <td><span class="endpoint">GET</span></td>
+                <td>获取账户净值曲线数据</td>
+            </tr>
+            <tr>
+                <td><code>/api/accounts/&lt;id&gt;/positions</code></td>
+                <td><span class="endpoint">GET</span></td>
+                <td>获取账户当前持仓</td>
+            </tr>
+            <tr>
+                <td><code>/api/accounts/&lt;id&gt;/orders</code></td>
+                <td><span class="endpoint">GET</span></td>
+                <td>获取账户订单记录</td>
+            </tr>
+            <tr>
+                <td><code>/api/accounts/&lt;id&gt;/pause</code></td>
+                <td><span class="endpoint post">POST</span></td>
+                <td>暂停账户</td>
+            </tr>
+            <tr>
+                <td><code>/api/accounts/&lt;id&gt;/resume</code></td>
+                <td><span class="endpoint post">POST</span></td>
+                <td>恢复账户</td>
+            </tr>
+            <tr>
+                <td><code>/api/accounts/&lt;id&gt;</code></td>
+                <td><span class="endpoint delete">DELETE</span></td>
+                <td>删除账户（实盘会同步清理 APScheduler job、live_schedule.json、结果目录）</td>
+            </tr>
+            <tr>
+                <td><code>/api/accounts/&lt;id&gt;</code></td>
+                <td><span class="endpoint post">PUT</span></td>
+                <td>更新账户配置/策略代码。请求体：<code>{"initialize_code":"...", "trigger_cron":"30 10 * * *"}</code>（热更新，无需重启）</td>
+            </tr>
+            <tr>
+                <td><code>/api/portfolio/nav</code></td>
+                <td><span class="endpoint post">POST</span></td>
+                <td>策略组合净值曲线计算。请求体：<code>{"accounts": [{"account_id":"sim_001","weight":40},...]}</code></td>
+            </tr>
+        </table>
+
+        <h3>任务管理接口</h3>
+        <table>
+            <tr><th>接口</th><th>方法</th><th>说明</th></tr>
+            <tr>
+                <td><code>/tasks/api/list</code></td>
+                <td><span class="endpoint">GET</span></td>
+                <td>获取所有定时任务状态</td>
+            </tr>
+            <tr>
+                <td><code>/tasks/api/trigger/&lt;task_id&gt;</code></td>
+                <td><span class="endpoint post">POST</span></td>
+                <td>手动触发一次任务</td>
+            </tr>
+            <tr>
+                <td><code>/tasks/api/delete/&lt;task_id&gt;</code></td>
+                <td><span class="endpoint post">POST</span></td>
+                <td>删除用户任务</td>
+            </tr>
+            <tr>
+                <td><code>/tasks/api/log/&lt;task_id&gt;</code></td>
+                <td><span class="endpoint">GET</span></td>
+                <td>获取任务最近一次日志</td>
+            </tr>
+        </table>
+
+        <h3>因子分析接口</h3>
+        <table>
+            <tr><th>接口</th><th>方法</th><th>说明</th></tr>
+            <tr>
+                <td><code>/api/factors</code></td>
+                <td><span class="endpoint">GET</span></td>
+                <td>获取所有因子绩效汇总（列表页数据）</td>
+            </tr>
+            <tr>
+                <td><code>/api/factors/&lt;id&gt;</code></td>
+                <td><span class="endpoint">GET</span></td>
+                <td>获取单因子详情（年度IC / 分组收益 / 各曲线序列）</td>
+            </tr>
+            <tr>
+                <td><code>/api/factors</code></td>
+                <td><span class="endpoint post">POST</span></td>
+                <td>提交新因子。请求体：<code>{"name":"...", "sql":"...", "category":"...", "run_now":true}</code></td>
+            </tr>
+            <tr>
+                <td><code>/api/factors/&lt;id&gt;/run</code></td>
+                <td><span class="endpoint post">POST</span></td>
+                <td>立即重跑单个因子</td>
+            </tr>
+            <tr>
+                <td><code>/api/factors/run_all</code></td>
+                <td><span class="endpoint post">POST</span></td>
+                <td>全量重跑所有因子</td>
+            </tr>
+            <tr>
+                <td><code>/api/factors/&lt;id&gt;</code></td>
+                <td><span class="endpoint delete">DELETE</span></td>
+                <td>删除因子及其结果</td>
+            </tr>
+        </table>
+
+        <h2 id="faq">常见问题</h2>
+
+        <h4>Q：Flask 的 debug 模式可以开吗？</h4>
+        <p>A：不可以。APScheduler 的 <code>BackgroundScheduler</code> 在 <code>debug=True</code> 时会被 reloader 启动两次，导致调度器重复运行。<code>main.py</code> 已固定 <code>debug=False</code>。</p>
+
+        <h4>Q：手动触发任务时提示"任务正在执行中"怎么办？</h4>
+        <p>A：同一任务设置了 <code>max_instances=1</code>，如果上次还没跑完，手动触发会被拒绝。请等待上次执行完成，或查看日志确认进度。</p>
+
+        <h4>Q：Windows 下并行执行有问题吗？</h4>
+        <p>A：Windows 使用 spawn 模式启动子进程，功能正常但启动开销比 Linux fork 大。如果账户数很少（&lt;4），并行收益不明显。</p>
+
+        <h4>Q：日志在哪里看？</h4>
+        <p>A：任务日志存储在 <code>data/simulation_results/task_logs/&lt;task_id&gt;.log</code>，可以通过 Web 界面的"日志"按钮实时查看。</p>
+
+        <h4>Q：实盘策略报错 "name 'xxx' is not defined" 怎么办？</h4>
+        <p>A：策略函数内部引用了外部全局变量。实盘用 <code>exec()</code> 在独立模块中加载源码，外部变量不可见。请将所有配置硬编码在函数内部，或通过 <code>context.g</code> 持久化。</p>
+
+        <h4>Q：修改实盘策略后需要重启服务吗？</h4>
+        <p>A：不需要。调用 <code>update_account()</code> 修改策略代码或 cron 后，下次定时触发自动生效。APScheduler 的调度时间也会热更新。</p>
+
+        <h4>Q：删除实盘账户后任务管理还有记录？</h4>
+        <p>A：正常删除会同步清理 APScheduler job、live_schedule.json、结果目录和日志。如果仍有残留，运行 <code>python scripts/cleanup_live_residual.py "D:\Desktop\最新回测框架\data"</code> 清理。</p>
+
+        <h4>Q：因子分析可以指定每日运行时间吗？</h4>
+        <p>A：可以。用 <code>--factor-time HH:MM</code> 单独指定；不指定则默认比模拟交易（<code>--time</code>）晚 30 分钟。因子分析依赖当天行情已入库，所以应晚于模拟交易触发。</p>
+
+        <h4>Q：因子的 IC 是正的，但多空年化是负的，是 bug 吗？</h4>
+        <p>A：不是。这说明因子<strong>非单调</strong>——IC 衡量整体线性相关，多空只看最高/最低两个极端分位。当因子呈倒 U 形（如中间分位收益最高），两端对冲反而不赚钱，多空为负如实反映了"IC 显著但极端分位无 alpha"。这正是多空指标的价值。</p>
+
+        <h4>Q：为什么因子值计算要自己写 SQL，不能传函数？</h4>
+        <p>A：SQL 直接下推到 DuckDB 计算，比 Python 逐日循环快得多（实测 2 倍以上），且你最懂自己的数据表。股票池筛选、中性化等也一并在 SQL 里灵活处理，系统只负责收益口径、过滤和 IC/分组计算。</p>
+
+        <h4>Q：一台笔记本能跑多少因子？</h4>
+        <p>A：绩效指标每因子仅几十 KB，几百上千个因子的存储毫无压力。计算上 SQL-first 引擎单因子几秒，<code>run_all</code> 并行重跑几百因子也是分钟级。瓶颈在因子数量而非单因子速度，靠并行解决。</p>
+
+        <h4>Q：数据存储格式变更后旧数据怎么办？</h4>
+        <p>A：最简单的方式是<strong>让所有账户重跑一次</strong>，新文件会自动生成。模拟账户路径为 <code>data/simulation_results/accounts/&lt;account_id&gt;/</code>，实盘账户路径为 <code>data/live/accounts/&lt;account_id&gt;/</code>。</p>
+    </article>
+
+    <aside class="doc-sidebar">
+        <h3>目录</h3>
+        <ul id="toc-list"></ul>
+    </aside>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var content = document.querySelector('.doc-content');
+    var tocList = document.getElementById('toc-list');
+    if (!content || !tocList) return;
+
+    var headings = content.querySelectorAll('h2, h3, h4');
+    headings.forEach(function(heading, index) {
+        if (!heading.id) {
+            heading.id = 'toc-heading-' + index;
+        }
+    });
+
+    tocList.innerHTML = '';
+    headings.forEach(function(heading) {
+        var li = document.createElement('li');
+        var a = document.createElement('a');
+        a.href = '#' + heading.id;
+        a.textContent = heading.textContent;
+        a.className = 'toc-' + heading.tagName.toLowerCase();
+        a.addEventListener('click', function(e) {
+            e.preventDefault();
+            var target = document.getElementById(heading.id);
+            if (target) {
+                var offset = 80;
+                var top = target.getBoundingClientRect().top + window.pageYOffset - offset;
+                window.scrollTo({ top: top, behavior: 'smooth' });
+            }
+        });
+        li.appendChild(a);
+        tocList.appendChild(li);
+    });
+
+    var tocLinks = tocList.querySelectorAll('a');
+    function highlightTOC() {
+        var scrollPos = window.scrollY + 120;
+        var current = null;
+        for (var i = headings.length - 1; i >= 0; i--) {
+            var h = headings[i];
+            if (h.offsetTop <= scrollPos) {
+                current = h.id;
+                break;
+            }
+        }
+        tocLinks.forEach(function(link) {
+            link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+        });
+    }
+
+    window.addEventListener('scroll', highlightTOC);
+    highlightTOC();
+});
+</script>
+{% endblock %}
