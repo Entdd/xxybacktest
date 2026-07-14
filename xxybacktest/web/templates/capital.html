@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>主力筹码</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+<style>
+:root{--bg:#0f1218;--panel:#171c26;--panel2:#1e2531;--line:#2a3240;--text:#e6ebf2;--sub:#8a94a6;--accent:#4c8dff;--green:#26c281;--red:#ff5d5d;--gold:#f5d547}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;font-size:14px}
+.wrap{max-width:1520px;margin:0 auto;padding:16px}
+header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:8px}
+h1{font-size:19px;font-weight:600}h1 .dot{color:var(--accent)}
+.hr{display:flex;align-items:center;gap:8px}.btn{background:var(--accent);color:#fff;border:none;border-radius:6px;padding:6px 14px;cursor:pointer;font-size:12px}.btn:hover{opacity:.9}
+.navlink{color:var(--sub);font-size:11px;text-decoration:none;margin-left:4px}.navlink:hover{color:var(--accent)}
+.ut{color:var(--sub);font-size:11px}
+.search{display:flex;gap:8px;align-items:center}
+.search input{background:var(--panel2);border:1px solid var(--line);color:var(--text);border-radius:5px;padding:6px 10px;font-size:12px;width:100px;outline:none}
+.search input:focus{border-color:var(--accent)}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.mt12{margin-top:12px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.ch{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line)}
+.ch h3{font-size:12px;font-weight:500}.ch .tag{font-size:10px;color:var(--sub)}
+.cb{flex:1}.cb.pad{padding:10px 14px}.cb.scrl{overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--line) transparent;padding:8px 14px}
+.cb.scrl::-webkit-scrollbar{width:4px}.cb.scrl::-webkit-scrollbar-thumb{background:var(--line);border-radius:2px}
+.up{color:var(--red)}.down{color:var(--green)}
+.loading{text-align:center;color:var(--sub);padding:30px;font-size:12px}
+.loading::before{content:"";display:inline-block;width:12px;height:12px;border:2px solid var(--line);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin-right:6px;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+.err{text-align:center;color:var(--sub);padding:20px;font-size:11px}
+
+/* Data tables */
+.tbl{width:100%;border-collapse:collapse;font-size:11px}
+.tbl th{color:var(--sub);font-weight:500;font-size:10px;text-align:right;padding:6px 8px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--panel)}
+.tbl td{text-align:right;padding:5px 8px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+.tbl .tl{text-align:left}
+
+.summary-bar{display:flex;justify-content:space-around;padding:12px 14px;background:var(--panel2);border-radius:6px;margin:8px 14px;font-size:12px}
+.summary-bar b{font-size:16px}
+.chart-wrap{width:100%;height:360px}
+
+@media(max-width:1000px){.grid2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>主力筹码 <span class="dot">●</span></h1>
+  <div class="hr">
+    <span class="ut" id="tick">加载中...</span>
+    <button class="btn" onclick="refreshAll()">刷新全部</button>
+    <span class="search"><input id="stockCode" value="000001" placeholder="代码"><button class="btn" onclick="refreshAll()">查询</button></span>
+    <a class="navlink" href="/">🏠</a><a class="navlink" href="/live">实时</a><a class="navlink" href="/signals">信号</a><a class="navlink" href="/capital" style="color:var(--accent)">筹码</a><a class="navlink" href="/fundamentals">基本面</a><a class="navlink" href="/factors">因子</a>
+  </div>
+</header>
+
+<!-- 资金流120日 + 融资融券 -->
+<div class="grid2">
+  <div class="card"><div class="ch"><h3>资金流向 (120日)</h3><span class="tag" id="ffTag"></span></div><div class="cb" id="ffBox"><div class="loading">加载中</div></div></div>
+  <div class="card"><div class="ch"><h3>融资融券</h3><span class="tag" id="mtTag"></span></div><div class="cb scrl" id="mtBox" style="max-height:420px"><div class="loading">加载中</div></div></div>
+</div>
+
+<!-- 大宗交易 + 股东户数 -->
+<div class="grid2 mt12">
+  <div class="card"><div class="ch"><h3>大宗交易</h3><span class="tag" id="btTag"></span></div><div class="cb scrl" id="btBox" style="max-height:360px"><div class="loading">加载中</div></div></div>
+  <div class="card"><div class="ch"><h3>股东户数 · 筹码集中度</h3><span class="tag" id="hnTag"></span></div><div class="cb" id="hnBox"><div class="loading">加载中</div></div></div>
+</div>
+
+<!-- 分红 -->
+<div class="card mt12"><div class="ch"><h3>分红送转历史</h3><span class="tag" id="dhTag"></span></div><div class="cb scrl" id="dhBox" style="max-height:300px"><div class="loading">加载中</div></div></div>
+</div>
+
+<script>
+const $=s=>document.getElementById(s);
+function up(v){return v>=0?'up':'down'}function sg(v){return v>=0?'+':''}
+async function fj(u){const r=await fetch(u);return r.json()}
+
+let curCode='000001', ffChart=null, hnChart=null;
+
+// ═══════════════════ 120日资金流 ═══════════════════
+async function loadFundFlow(){
+  const b=$('ffBox');
+  try{
+    const j=await fj('/api/live/fund_flow?code='+curCode);
+    if(j.error||!j.data||!j.data.flow||!j.data.flow.length){b.innerHTML='<div class="err">暂无资金流数据<br><span style="font-size:10px">(东财 push2his 被网络限制，新浪降级也失败)</span></div>';return}
+    const d=j.data,rows=d.flow;
+    const source=d.source||'';
+    // Summary
+    const r20=rows.slice(-20),total=r20.reduce((s,r)=>s+(r.main_net||0),0);
+    const r5=rows.slice(-5),r5total=r5.reduce((s,r)=>s+(r.main_net||0),0);
+    $('ffTag').textContent=rows.length+'日 '+source+' | 近5日净流入 '+sg(r5total)+(r5total/1e4).toFixed(0)+'万';
+    // Summary bar
+    let html='<div class="summary-bar">';
+    html+='<span>近5日 <b class="'+up(r5total)+'">'+sg(r5total)+(Math.abs(r5total)/1e4).toFixed(0)+'万</b></span>';
+    html+='<span>近20日 <b class="'+up(total)+'">'+sg(total)+(Math.abs(total)/1e8).toFixed(2)+'亿</b></span>';
+    html+='<span style="font-size:10px;color:var(--sub)">'+source+'</span></div>';
+
+    // Check if we have detailed breakdown (Eastmoney) or simple net (Sina)
+    const hasDetail=rows.some(r=>r.super_net!==0||r.large_net!==0||r.mid_net!==0||r.small_net!==0);
+    if(hasDetail){
+      html+='<div class="chart-wrap" id="ffChart"></div>';
+    }else{
+      // Sina fallback: simple bar chart of net flow
+      html+='<div class="chart-wrap" id="ffChart"></div>';
+    }
+    b.innerHTML=html;
+
+    if(typeof echarts!=='undefined'){
+      setTimeout(()=>{
+        const cd=$('ffChart');if(!cd)return;
+        if(ffChart)ffChart.dispose();ffChart=echarts.init(cd);
+        if(hasDetail){
+          ffChart.setOption({
+            backgroundColor:'transparent',tooltip:{trigger:'axis'},
+            legend:{top:0,textStyle:{fontSize:10,color:'#8a94a6'},data:['主力','超大单','大单','中单','小单']},
+            grid:{left:'7%',right:'2%',top:'12%',bottom:'5%'},
+            xAxis:{type:'category',data:rows.map(r=>r.date),axisLabel:{fontSize:8,color:'#8a94a6',interval:9}},
+            yAxis:{type:'value',axisLabel:{fontSize:9,color:'#8a94a6',formatter:v=>(v/1e8).toFixed(1)+'亿'},splitLine:{lineStyle:{color:'#2a3240'}}},
+            series:[
+              {name:'主力',type:'bar',data:rows.map(r=>r.main_net),stack:'a',itemStyle:{color:'#ff5d5d'}},
+              {name:'超大单',type:'bar',data:rows.map(r=>r.super_net),stack:'a',itemStyle:{color:'#e74c3c'}},
+              {name:'大单',type:'bar',data:rows.map(r=>r.large_net),stack:'a',itemStyle:{color:'#f39c12'}},
+              {name:'中单',type:'bar',data:rows.map(r=>r.mid_net),stack:'a',itemStyle:{color:'#3498db'}},
+              {name:'小单',type:'bar',data:rows.map(r=>r.small_net),stack:'a',itemStyle:{color:'#2ecc71'}},
+            ],
+            dataZoom:[{type:'inside',start:50,end:100}],
+          });
+        }else{
+          // Simple net flow bar
+          ffChart.setOption({
+            backgroundColor:'transparent',tooltip:{trigger:'axis'},
+            grid:{left:'7%',right:'2%',top:'8%',bottom:'5%'},
+            xAxis:{type:'category',data:rows.map(r=>r.date),axisLabel:{fontSize:8,color:'#8a94a6',interval:9}},
+            yAxis:{type:'value',axisLabel:{fontSize:9,color:'#8a94a6',formatter:v=>(v/1e4).toFixed(0)+'万'},splitLine:{lineStyle:{color:'#2a3240'}}},
+            series:[{
+              type:'bar',data:rows.map(r=>({value:r.main_net||0,itemStyle:{color:(r.main_net||0)>=0?'#ff5d5d':'#26c281'}})),
+            }],
+            dataZoom:[{type:'inside',start:50,end:100}],
+          });
+        }
+      },100);
+    }
+  }catch(e){b.innerHTML='<div class="err">'+e.message+'</div>'}
+}
+
+// ═══════════════════ 融资融券 ═══════════════════
+async function loadMargin(){
+  const b=$('mtBox');
+  try{
+    const j=await fj('/api/live/margin?code='+curCode);
+    if(j.error||!j.data){b.innerHTML='<div class="err">暂无数据</div>';return}
+    const rows=j.data||[];
+    if(!rows.length){b.innerHTML='<div class="err">无融资融券数据</div>';return}
+    $('mtTag').textContent=rows.length+'日';
+    b.innerHTML='<table class="tbl"><tr><th class="tl">日期</th><th>融资余额(亿)</th><th>融资买入(亿)</th><th>融资偿还(亿)</th><th>融券余额(亿)</th><th>两融合计(亿)</th></tr>'
+      +rows.slice(0,20).map(r=>'<tr><td class="tl">'+r.date+'</td><td>'+((r.rzye||0)/1e8).toFixed(2)+'</td><td>'+((r.rzmre||0)/1e8).toFixed(2)+'</td><td>'+((r.rzche||0)/1e8).toFixed(2)+'</td><td>'+((r.rqye||0)/1e8).toFixed(2)+'</td><td>'+((r.rzrqye||0)/1e8).toFixed(2)+'</td></tr>').join('')
+      +'</table>';
+  }catch(e){b.innerHTML='<div class="err">'+e.message+'</div>'}
+}
+
+// ═══════════════════ 大宗交易 ═══════════════════
+async function loadBlockTrade(){
+  const b=$('btBox');
+  try{
+    const j=await fj('/api/live/block_trade?code='+curCode);
+    if(j.error||!j.data){b.innerHTML='<div class="err">暂无数据</div>';return}
+    const rows=j.data||[];
+    if(!rows.length){b.innerHTML='<div class="err">近期无大宗交易</div>';return}
+    $('btTag').textContent=rows.length+'笔';
+    b.innerHTML='<table class="tbl"><tr><th class="tl">日期</th><th>成交价</th><th>收盘价</th><th>溢价率</th><th>成交量(万)</th><th>买方</th><th>卖方</th></tr>'
+      +rows.map(r=>'<tr><td class="tl">'+r.date+'</td><td>'+r.price.toFixed(2)+'</td><td>'+r.close.toFixed(2)+'</td><td class="'+up(r.premium_pct)+'">'+sg(r.premium_pct)+(r.premium_pct||0).toFixed(2)+'%</td><td>'+(r.vol/10000).toFixed(0)+'</td><td>'+r.buyer+'</td><td>'+r.seller+'</td></tr>').join('')
+      +'</table>';
+  }catch(e){b.innerHTML='<div class="err">'+e.message+'</div>'}
+}
+
+// ═══════════════════ 股东户数 ═══════════════════
+async function loadHolderNum(){
+  const b=$('hnBox');
+  try{
+    const j=await fj('/api/live/holder_num?code='+curCode);
+    if(j.error||!j.data){b.innerHTML='<div class="err">暂无数据</div>';return}
+    const rows=j.data||[];
+    if(!rows.length){b.innerHTML='<div class="err">无股东户数数据</div>';return}
+    $('hnTag').textContent=rows.length+'期';
+    // Summary
+    const latest=rows[0];
+    const chg=latest.change_ratio||0;
+    let trend='';
+    if(chg<-5)trend='筹码快速集中 ↑';
+    else if(chg<-1)trend='筹码缓慢集中 ↗';
+    else if(chg>5)trend='筹码快速分散 ↓';
+    else if(chg>1)trend='筹码缓慢分散 ↘';
+    else trend='筹码稳定 →';
+
+    let html='<div class="summary-bar">';
+    html+='<span>最新股东户数 <b>'+((latest.holder_num||0)/10000).toFixed(2)+'万</b></span>';
+    html+='<span>环比变化 <b class="'+up(-chg)+'">'+sg(-chg)+(-chg).toFixed(1)+'%</b></span>';
+    html+='<span>户均持股 <b>'+((latest.avg_shares||0)/10000).toFixed(2)+'万</b></span>';
+    html+='<span>'+trend+'</span></div>';
+    html+='<div class="chart-wrap" id="hnChart"></div>';
+    b.innerHTML=html;
+
+    if(typeof echarts!=='undefined'){
+      setTimeout(()=>{
+        const cd=$('hnChart');if(!cd)return;
+        if(hnChart)hnChart.dispose();hnChart=echarts.init(cd);
+        const rev=[...rows].reverse();
+        hnChart.setOption({
+          backgroundColor:'transparent',tooltip:{trigger:'axis'},
+          legend:{top:0,textStyle:{fontSize:10,color:'#8a94a6'},data:['股东户数','户均持股']},
+          grid:{left:'7%',right:'5%',top:'12%',bottom:'5%'},
+          xAxis:{type:'category',data:rev.map(r=>r.date),axisLabel:{fontSize:8,color:'#8a94a6'}},
+          yAxis:[
+            {type:'value',name:'户',axisLabel:{fontSize:9,color:'#8a94a6',formatter:function(v){return(v/10000).toFixed(0)+'万'}},splitLine:{lineStyle:{color:'#2a3240'}}},
+            {type:'value',name:'股',axisLabel:{fontSize:9,color:'#8a94a6',formatter:function(v){return(v/10000).toFixed(0)+'万'}},splitLine:{show:false}},
+          ],
+          series:[
+            {name:'股东户数',type:'line',data:rev.map(r=>r.holder_num),yAxisIndex:0,symbol:'circle',symbolSize:4,lineStyle:{width:2,color:'#ff5d5d'}},
+            {name:'户均持股',type:'line',data:rev.map(r=>r.avg_shares),yAxisIndex:1,symbol:'circle',symbolSize:4,lineStyle:{width:2,color:'#4c8dff'}},
+          ],
+        });
+      },100);
+    }
+  }catch(e){b.innerHTML='<div class="err">'+e.message+'</div>'}
+}
+
+// ═══════════════════ 分红 ═══════════════════
+async function loadDividend(){
+  const b=$('dhBox');
+  try{
+    const j=await fj('/api/live/dividend?code='+curCode);
+    if(j.error||!j.data){b.innerHTML='<div class="err">暂无数据</div>';return}
+    const rows=j.data||[];
+    if(!rows.length){b.innerHTML='<div class="err">无分红记录</div>';return}
+    $('dhTag').textContent=rows.length+'次';
+    b.innerHTML='<table class="tbl"><tr><th class="tl">除权日</th><th>每股派息(元)</th><th>转增(每10股)</th><th>送股(每10股)</th><th>进度</th></tr>'
+      +rows.map(r=>'<tr><td class="tl">'+r.date+'</td><td>'+r.bonus_rmb+'</td><td>'+r.transfer_ratio+'</td><td>'+r.bonus_ratio+'</td><td>'+r.plan+'</td></tr>').join('')
+      +'</table>';
+  }catch(e){b.innerHTML='<div class="err">'+e.message+'</div>'}
+}
+
+// ═══════════════════ 刷新 ═══════════════════
+let loading=false;
+async function refreshAll(){
+  if(loading)return;loading=true;
+  curCode=$('stockCode').value.trim()||'000001';
+  if(!curCode.match(/^\d{6}/)){curCode='000001';$('stockCode').value='000001';}
+  $('tick').textContent='查询 '+curCode+' ...';
+
+  // Each loader handles its own errors, so allSettled always finishes
+  const tasks=[loadFundFlow(),loadMargin(),loadBlockTrade(),loadHolderNum(),loadDividend()];
+  await Promise.allSettled(tasks);
+  $('tick').textContent=curCode+' | 已更新 '+new Date().toLocaleTimeString();
+  loading=false;
+}
+
+$('stockCode').addEventListener('keydown',e=>{if(e.key==='Enter')refreshAll()});
+refreshAll();
+</script>
+</body>
+</html>

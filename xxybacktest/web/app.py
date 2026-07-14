@@ -11,6 +11,7 @@ def create_app():
     from .routes.api import api_bp
     from .routes.tasks import tasks_bp
     from .routes.factor import factor_bp
+    from .routes.live import live_bp
 
     app.register_blueprint(dashboard_bp)
     app.register_blueprint(account_bp)
@@ -18,5 +19,7 @@ def create_app():
     app.register_blueprint(tasks_bp)
     # factor_bp 自带完整路径(/factors 与 /api/factors), 不加前缀
     app.register_blueprint(factor_bp)
+    # live_bp 自带完整路径(/live 与 /api/live), 不加前缀
+    app.register_blueprint(live_bp)
 
     return app
