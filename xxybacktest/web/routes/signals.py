@@ -183,7 +183,31 @@ def api_signals_industry():
                     pass
             for r in data["top"]:
                 r["leader_name"] = leader_names.get(r.get("leader", ""), "")
-            return ok({**data, "source": "Eastmoney"})
+            # 批量取每个行业 top5 股票
+            from xxybacktest.data_providers.core import em_get, UA
+            from concurrent.futures import ThreadPoolExecutor, as_completed
+            def _fetch_block_stocks(bk_code):
+                try:
+                    url2 = "https://push2.eastmoney.com/api/qt/clist/get"
+                    p2 = {"pn":"1","pz":"5","po":"1","np":"1","fltt":"2","invt":"2",
+                          "fid":"f3","fs":f"b:{bk_code}+t:2",
+                          "fields":"f3,f12,f14"}
+                    r2 = em_get(url2, params=p2, headers={"User-Agent":UA}, timeout=10)
+                    items = r2.json().get("data",{}).get("diff",[])
+                    return [{"code":it.get("f12",""),"name":it.get("f14",""),
+                             "pct":it.get("f3",0) or 0} for it in items[:5]]
+                except Exception:
+                    return []
+            bks = {r["code"]: r for r in data["top"] if r.get("code")}
+            with ThreadPoolExecutor(max_workers=5) as pool:
+                futures = {pool.submit(_fetch_block_stocks, c): c for c in bks}
+                for f in as_completed(futures):
+                    c = futures[f]
+                    try:
+                        bks[c]["top_stocks"] = f.result()
+                    except Exception:
+                        bks[c]["top_stocks"] = []
+            return ok({**data, "source": "Eastmoney + top5"})
     except Exception: pass
     try:
         from xxybacktest.data_providers import ths_hot_reason
