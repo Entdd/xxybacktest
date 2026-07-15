@@ -46,7 +46,7 @@
   <div class="card"><div class="card-hd"><h3>解禁日历 & 概念板块</h3></div><div class="card-bd scrl" id="lcBox" style="max-height:500px"><div class="loading">加载中</div></div></div>
 </div>
 <div class="grid2 mt12">
-  <div class="card"><div class="card-hd"><h3>今日打板</h3></div><div class="card-bd pad" id="luBox"><div class="loading">加载中</div></div><div class="card-bd scrl" id="luDetail" style="display:none;max-height:400px;border-top:1px solid #2a3240;background:#1e2531"></div></div>
+  <div class="card"><div class="card-hd"><h3>今日打板</h3></div><div class="card-bd pad" id="luBox"><div class="loading">加载中</div></div></div>
   <div class="card"><div class="card-hd"><h3>人气榜 TOP12</h3><span class="ch-tag" id="hotTag"></span></div><div class="card-bd scrl" id="hotBox" style="max-height:300px"><div class="loading">加载中</div></div></div>
 </div>
 <div class="card mt12"><div class="card-hd"><h3>行业热度</h3><span class="ch-tag" id="indTag"></span></div><div class="card-bd scrl" id="indBox" style="max-height:520px;padding:8px 14px"><div class="loading">加载中</div></div></div>
@@ -67,33 +67,11 @@ async function loadDT(date){const b=$('dtBox');try{const d2=date||$('dtDate').va
 
 async function loadLC(){const b=$('lcBox');curCode=$('stockCode').value.trim()||'000001';try{const[lk,cp]=await Promise.all([fj('/api/signals/lockup?code='+curCode),fj('/api/signals/concept?code='+curCode)]);let h='<div style="font-size:11px;font-weight:500;margin-bottom:4px">查询: <a href="/market?code='+curCode+'" style="color:#4c8dff;text-decoration:none">'+curCode+'</a> <a href="/fundamentals?code='+curCode+'" title="基础" style="color:#8a94a6;text-decoration:none;font-size:9px">📊</a> <a href="/announcements?code='+curCode+'" title="公告" style="color:#8a94a6;text-decoration:none;font-size:9px">📢</a> <a href="/capital?code='+curCode+'" title="资金" style="color:#8a94a6;text-decoration:none;font-size:9px">💰</a></div>';if(cp.data&&cp.data.concept_tags){h+='<div style="font-size:11px;font-weight:500;margin:8px 0 4px">概念板块 ('+cp.data.total+'个)</div><div style="line-height:2">'+cp.data.concept_tags.slice(0,20).map(t=>'<span class="ctag">'+t+'</span>').join(' ')+'</div>';if(cp.data.boards&&cp.data.boards.length){h+='<div style="font-size:11px;font-weight:500;margin:12px 0 4px">板块明细</div>';h+=cp.data.boards.slice(0,15).map(x=>'<div style="font-size:10px;padding:3px 0;border-bottom:1px solid #2a3240">'+x.name+' <span style="color:#8a94a6">'+x.code+' '+(x.change_pct?' '+sg(x.change_pct)+x.change_pct+'%':'')+'</span></div>').join('')}}if(lk.data){const up=lk.data.upcoming||[],hist=lk.data.history||[];h+='<div style="font-size:11px;font-weight:500;margin:12px 0 4px;color:#f5d547">未来90天解禁</div>';if(up.length){h+=up.map(u=>'<div class="lk-item"><span class="lk-date">'+u.date+'</span> <span class="lk-type">'+(u.type||'')+'</span><br><span class="lk-detail">'+(u.shares||0).toFixed(0)+'万股 | 可流通'+(u.able_shares||0).toFixed(0)+'万股 | 占比'+((u.ratio||0)*100).toFixed(1)+'%</span></div>').join('')}else{h+='<div style="font-size:11px;color:#26c281;margin-bottom:8px">未来90天无待解禁</div>'}h+='<div style="font-size:10px;color:#8a94a6;margin:6px 0">历史'+hist.length+'批解禁'+(hist[0]?' | 最近:'+hist[0].date:'')+'</div>'}b.innerHTML=h||'<div class="err">暂无</div>'}catch(e){b.innerHTML='<div class="err">-</div>'}}
 
-async function loadLU(){const b=$('luBox');try{const j=await fj('/api/signals/limit-up');if(j.error||!j.data||!j.data.sentiment){b.innerHTML='<div class="err">非交易日或无数据</div>';return}const s=j.data.sentiment||{};let h='<div class="sent-grid">';
-h+='<div class="sent-i" onclick=\"showLimitDetail('zt')\" style=\"cursor:pointer\" title=\"点击查看涨停股\"><div class=\"sent-v\" style=\"color:#ff5d5d\">'+s.zt_count+'</div><div class=\"sent-l\">涨停</div></div>';
-h+='<div class="sent-i" onclick=\"showLimitDetail('zb')\" style=\"cursor:pointer\" title=\"点击查看炸板股\"><div class=\"sent-v\" style=\"color:#faad14\">'+s.zb_count+'</div><div class=\"sent-l\">炸板</div></div>';
-h+='<div class="sent-i" onclick=\"showLimitDetail('dt')\" style=\"cursor:pointer\" title=\"点击查看跌停股\"><div class=\"sent-v\" style=\"color:#26c281\">'+s.dt_count+'</div><div class=\"sent-l\">跌停</div></div>';
-h+='<div class=\"sent-i\"><div class=\"sent-v\">'+(s.break_rate||0)+'%</div><div class=\"sent-l\">炸板率</div></div></div>';
-if(s.max_height)h+='<span style=\"font-size:12px\">最高 <b style=\"color:#ff5d5d\">'+s.max_height+'</b> 连板</span>';
-b.innerHTML=h;$('luDetail').style.display='none'}catch(e){b.innerHTML='<div class="err">-</div>'}}
-
-function showLimitDetail(type){
-  var d=$('luDetail'),title='',color='';
-  if(type==='zt'){title='涨停股';color='#ff5d5d'}
-  else if(type==='zb'){title='炸板股';color='#faad14'}
-  else if(type==='dt'){title='跌停股';color='#26c281'}
-  d.style.display='block';d.innerHTML='<div class=\"loading\">加载 '+title+'...</div>';
-  fj('/api/signals/limit_pool?type='+type).then(function(j){
-    var st=(j.data&&j.data.stocks)||[];
-    if(!st.length){d.innerHTML='<div class=\"err\" style=\"padding:10px\">暂无数据</div>';return}
-    var h='<div style=\"padding:10px 14px;font-size:11px;font-weight:600;color:'+color+'\">'+title+' · '+st.length+'只 <span onclick=\"$('luDetail').style.display='none'\" style=\"color:#8a94a6;font-weight:400;cursor:pointer;font-size:10px\">[关闭]</span></div>';
-    h+='<div style=\"display:flex;flex-wrap:wrap;gap:6px;padding:6px 14px 12px;font-size:10px\">';
-    st.forEach(function(s){h+='<span style=\"background:#171c26;padding:3px 8px;border-radius:5px;white-space:nowrap\"><a href=\"/market?code='+s.code+'\" style=\"color:#e6ebf2;text-decoration:none\">'+s.name+'</a> <span style=\"color:#8a94a6\">'+s.code+'</span> '+(s.stat?'<span style=\"color:#8a94a6\">'+s.stat+'</span>':'')+'</span>';});
-    h+='</div>';d.innerHTML=h;
-  }).catch(function(e){d.innerHTML='<div class=\"err\">'+e.message+'</div>'});
-}
+async function loadLU(){const b=$('luBox');try{const j=await fj('/api/signals/limit-up');if(j.error||!j.data||!j.data.sentiment){b.innerHTML='<div class="err">非交易日或无数据</div>';return}const s=j.data.sentiment;let h='<div class="sent-grid"><div class="sent-i"><div class="sent-v" style="color:#ff5d5d">'+s.zt_count+'</div><div class="sent-l">涨停</div></div><div class="sent-i"><div class="sent-v" style="color:#faad14">'+s.zb_count+'</div><div class="sent-l">炸板</div></div><div class="sent-i"><div class="sent-v" style="color:#26c281">'+s.dt_count+'</div><div class="sent-l">跌停</div></div><div class="sent-i"><div class="sent-v">'+(s.break_rate||0)+'%</div><div class="sent-l">炸板率</div></div></div>';b.innerHTML=h}catch(e){b.innerHTML='<div class="err">-</div>'}}
 
 async function loadHot(){const b=$('hotBox');try{const j=await fj('/api/signals/hot');if(j.error||!j.data?.length){b.innerHTML='<div class="err">暂无数据</div>';return}$('hotTag').textContent=j.data.length+'只';b.innerHTML='<table class="hot-table">'+j.data.map(h=>'<tr><td class="hr">#'+h.rank+'</td><td class="hn"><a href="/market?code='+h.code+'" style="color:#e6ebf2;text-decoration:none">'+h.name+'</a></td><td class="hp '+up(h.pct||0)+'">'+sg(h.pct||0)+(h.pct||0).toFixed(1)+'%</td><td class="hh">'+((h.heat||0)/10000).toFixed(0)+'万</td></tr>').join('')+'</table>'}catch(e){b.innerHTML='<div class="err">-</div>'}}
 
-async function loadIndustry(){const b=$('indBox');try{const j=await fj('/api/signals/industry');if(j.error||!j.data){b.innerHTML='<div class="err">暂无数据</div>';return}$('indTag').textContent=j.data.source||'';const top=j.data.top||[];if(!top.length){b.innerHTML='<div class="err">暂无数据</div>';return}b.innerHTML=top.map(function(r,i){var p=r.change_pct||0,lc=r.leader_change||0;return'<div class=\"ind-row\" style=\"flex-wrap:wrap;padding:8px 0\"><span class=\"ind-rank'+(i<3?' top':'')+'\">'+r.rank+'</span><span class=\"ind-name\">'+r.name+'</span><span class=\"ind-pct '+up(p)+'\">'+(p?sg(p)+p+'%':'')+'</span>'+(r.leader?'<span style=\"font-size:10px\"><a href=\"/market?code='+r.leader+'\" style=\"color:#4c8dff;text-decoration:none\" title=\"领涨股\">🏷'+r.leader+'</a></span>':'')+'<span style=\"color:#8a94a6;font-size:10px;margin-left:auto\">'+(r.up_count||0)+'↑'+(r.down_count||0)+'↓</span><div id=\"stk-'+r.code+'\" style=\"width:100%;margin-top:4px;display:flex;flex-wrap:wrap;gap:2px 8px;font-size:10px;color:#8a94a6\"></div></div>';}).join('');loadTopStocks()}catch(e){b.innerHTML='<div class="err">-</div>';}}
+async function loadIndustry(){const b=$('indBox');try{const j=await fj('/api/signals/industry');if(j.error||!j.data){b.innerHTML='<div class="err">暂无数据</div>';return}$('indTag').textContent=j.data.source||'';const top=j.data.top||[];if(!top.length){b.innerHTML='<div class="err">暂无数据</div>';return}b.innerHTML=top.map(function(r,i){var p=r.change_pct||0,lc=r.leader_change||0;return'<div class=\"ind-row\" style=\"flex-wrap:wrap;padding:8px 0\"><span class=\"ind-rank'+(i<3?' top':'')+'\">'+r.rank+'</span><span class=\"ind-name\">'+r.name+'</span><span class=\"ind-pct '+up(p)+'\">'+(p?sg(p)+p+'%':'')+'</span>'+(r.leader?'<span style=\"font-size:10px\"><a href=\"/market?code='+r.leader+'\" style=\"color:#4c8dff;text-decoration:none\" title=\"领涨股\">🏷'+r.leader+'</a></span>':'')+'<span style=\"color:#8a94a6;font-size:10px;margin-left:auto\">'+(r.up_count||0)+'↑'+(r.down_count||0)+'↓</span><div id=\"stk-'+r.code+'\" style=\"width:100%;margin-top:4px;display:flex;flex-wrap:wrap;gap:4px 10px;font-size:10px;color:#8a94a6\">加载中...</div></div>';}).join('');setTimeout(loadTopStocks,200)}catch(e){b.innerHTML='<div class="err">-</div>';}}
 
 function loadTopStocks(){
   var rows=document.querySelectorAll('[id^=\"stk-\"]');
@@ -101,9 +79,9 @@ function loadTopStocks(){
     var code=el.id.replace('stk-','');
     fj('/api/signals/industry_stocks?code='+code).then(function(j){
       var ts=(j.data&&j.data.stocks||[]).slice(0,5),h='';
-      ts.forEach(function(s){h+='<a href=\"/market?code='+s.code+'\" style=\"color:#e6ebf2;text-decoration:none;font-size:10px\" title=\"'+s.name+'\">'+s.name+'</a><span style=\"color:#8a94a6;font-size:9px;margin:0 4px 0 1px\">'+sg(s.change_pct||0)+(s.change_pct||0).toFixed(1)+'%</span>';});
-      el.innerHTML=h||'';
-    }).catch(function(){el.innerHTML='';});
+      ts.forEach(function(s){h+='<a href=\"/market?code='+s.code+'\" style=\"color:#e6ebf2;text-decoration:none\" title=\"'+s.name+'\">'+s.name+'</a><span style=\"color:#8a94a6;font-size:9px;margin:0 2px\">'+sg(s.change_pct||0)+(s.change_pct||0).toFixed(1)+'%</span>';});
+      el.innerHTML=h||'--';
+    }).catch(function(){el.innerHTML='--'});
   });
 }
 
