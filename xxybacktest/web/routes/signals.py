@@ -170,6 +170,19 @@ def api_signals_industry():
         from xxybacktest.data_providers import industry_comparison
         data = industry_comparison(10)
         if data and data.get("total", 0) > 0:
+            # 批量查询领涨股名称
+            leaders = [r["leader"] for r in data["top"] if r.get("leader")]
+            leader_names = {}
+            if leaders:
+                try:
+                    from xxybacktest.data_providers import tencent_quote
+                    q = tencent_quote(leaders)
+                    for code, info in q.items():
+                        leader_names[code] = info.get("name", "")
+                except Exception:
+                    pass
+            for r in data["top"]:
+                r["leader_name"] = leader_names.get(r.get("leader", ""), "")
             return ok({**data, "source": "Eastmoney"})
     except Exception: pass
     try:
