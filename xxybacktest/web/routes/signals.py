@@ -180,26 +180,45 @@ def api_signals_hot():
 @signals_bp.route("/api/signals/industry")
 @signals_bp.route("/api/live/industry")  # 向后兼容
 def api_signals_industry():
+    # ── 优先: 东财行业排名 (push2ex) ──
     try:
         from xxybacktest.data_providers import industry_comparison
         data = industry_comparison(10)
         if data and data.get("total", 0) > 0:
             return ok({**data, "source": "Eastmoney"})
     except Exception: pass
+
+    # ── 降级: 同花顺强势股 → 按题材归因分组, 每组取 top5 ──
     try:
         from xxybacktest.data_providers import ths_hot_reason
-        from collections import Counter
+        from collections import defaultdict
         df = ths_hot_reason()
         if df is not None and not df.empty:
             col = "题材归因" if "题材归因" in df.columns else ("reason" if "reason" in df.columns else None)
-            tags = []
-            if col:
-                for r in df[col].dropna():
-                    tags.extend([t.strip() for t in str(r).split("+") if t.strip()])
-            cnt = Counter(tags)
-            top = [{"rank": i+1, "name": tag, "count": n, "change_pct": 0}
-                   for i, (tag, n) in enumerate(cnt.most_common(15))]
-            return ok({"top": top[:10], "bottom": [], "total": len(cnt), "source": "THS"})
+            code_col = "代码" if "代码" in df.columns else ("code" if "code" in df.columns else None)
+            name_col = "名称" if "名称" in df.columns else ("name" if "name" in df.columns else None)
+            # 按题材标签分组
+            groups = defaultdict(list)
+            for _, r in df.iterrows():
+                tags_str = str(r.get(col, "")) if col else ""
+                if not tags_str or tags_str == "nan": continue
+                for tag in [t.strip() for t in tags_str.split("+") if t.strip()]:
+                    code_val = str(r.get(code_col, "")) if code_col else ""
+                    groups[tag].append({
+                        "code": code_val,
+                        "name": str(r.get(name_col, "")) if name_col else "",
+                        "pct": 0,
+                    })
+            # 按每组股票数量排序, 取 top10 题材, 每组 top5
+            sorted_groups = sorted(groups.items(), key=lambda x: len(x[1]), reverse=True)
+            top = []
+            for i, (tag, stocks) in enumerate(sorted_groups[:10]):
+                top.append({
+                    "rank": i+1, "name": tag, "count": len(stocks),
+                    "change_pct": round(sum(s["pct"] for s in stocks)/max(len(stocks),1), 2),
+                    "top_stocks": sorted(stocks, key=lambda s: s["pct"], reverse=True)[:5],
+                })
+            return ok({"top": top, "bottom": [], "total": len(groups), "source": "THS 强势股归因"})
     except Exception: pass
     return err("Industry unavailable")
 

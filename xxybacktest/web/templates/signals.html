@@ -69,9 +69,9 @@ async function loadLC(){const b=$('lcBox');curCode=$('stockCode').value.trim()||
 
 var luData={};
 async function loadLU(){const b=$('luBox');try{const j=await fj('/api/signals/limit-up');if(j.error||!j.data){b.innerHTML='<div class="err">非交易日或无数据</div>';return}luData=j.data;const s=j.data.sentiment||{};let h='<div class="sent-grid">';
-h+='<div class="sent-i" onclick=\"showLimitDetail(\"zt\")\" style=\"cursor:pointer\" title=\"点击查看涨停股\"><div class=\"sent-v\" style=\"color:#ff5d5d\">'+s.zt_count+'</div><div class=\"sent-l\">涨停</div></div>';
-h+='<div class="sent-i" onclick=\"showLimitDetail(\"zb\")\" style=\"cursor:pointer\" title=\"点击查看炸板股\"><div class=\"sent-v\" style=\"color:#faad14\">'+s.zb_count+'</div><div class=\"sent-l\">炸板</div></div>';
-h+='<div class="sent-i" onclick=\"showLimitDetail(\"dt\")\" style=\"cursor:pointer\" title=\"点击查看跌停股\"><div class=\"sent-v\" style=\"color:#26c281\">'+s.dt_count+'</div><div class=\"sent-l\">跌停</div></div>';
+h+='<div class="sent-i" onclick=\"showLimitDetail('zt')\" style=\"cursor:pointer\" title=\"点击查看涨停股\"><div class=\"sent-v\" style=\"color:#ff5d5d\">'+s.zt_count+'</div><div class=\"sent-l\">涨停</div></div>';
+h+='<div class="sent-i" onclick=\"showLimitDetail('zb')\" style=\"cursor:pointer\" title=\"点击查看炸板股\"><div class=\"sent-v\" style=\"color:#faad14\">'+s.zb_count+'</div><div class=\"sent-l\">炸板</div></div>';
+h+='<div class="sent-i" onclick=\"showLimitDetail('dt')\" style=\"cursor:pointer\" title=\"点击查看跌停股\"><div class=\"sent-v\" style=\"color:#26c281\">'+s.dt_count+'</div><div class=\"sent-l\">跌停</div></div>';
 h+='<div class=\"sent-i\"><div class=\"sent-v\">'+(s.break_rate||0)+'%</div><div class=\"sent-l\">炸板率</div></div></div>';
 if(s.max_height)h+='<span style=\"font-size:12px\">最高 <b style=\"color:#ff5d5d\">'+s.max_height+'</b> 连板</span>';
 b.innerHTML=h;$('luDetail').style.display='none'}catch(e){b.innerHTML='<div class="err">-</div>'}}
@@ -82,7 +82,7 @@ function showLimitDetail(type){
   else if(type==='zb'){st=luData.zb_stocks||[];title='炸板股';color='#faad14'}
   else if(type==='dt'){st=luData.dt_stocks||[];title='跌停股';color='#26c281'}
   if(!st.length){d.innerHTML='<div class=\"err\" style=\"padding:10px\">暂无数据</div>';d.style.display='block';return}
-  var h='<div style=\"padding:10px 14px;font-size:11px;font-weight:600;color:'+color+'\">'+title+' · '+st.length+'只 <span onclick=\"$(\"luDetail\").style.display=\"none\"\" style=\"color:#8a94a6;font-weight:400;cursor:pointer;font-size:10px\">[关闭]</span></div>';
+  var h='<div style=\"padding:10px 14px;font-size:11px;font-weight:600;color:'+color+'\">'+title+' · '+st.length+'只 <span onclick=\"$('luDetail').style.display='none'\" style=\"color:#8a94a6;font-weight:400;cursor:pointer;font-size:10px\">[关闭]</span></div>';
   h+='<div style=\"display:flex;flex-wrap:wrap;gap:6px;padding:6px 14px 12px;font-size:10px\">';
   st.forEach(function(s){h+='<span style=\"background:#171c26;padding:3px 8px;border-radius:5px;white-space:nowrap\"><a href=\"/market?code='+s.code+'\" style=\"color:#e6ebf2;text-decoration:none\">'+s.name+'</a> <span style=\"color:#8a94a6\">'+s.code+'</span> '+(s.stat?'<span style=\"color:#8a94a6\">'+s.stat+'</span>':'')+'</span>';});
   h+='</div>';d.innerHTML=h;d.style.display='block'}
