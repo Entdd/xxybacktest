@@ -180,7 +180,14 @@
       "Bash(curl -s http://localhost:5000/market)",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5000/market)",
       "Bash(curl -s \"http://localhost:5000/api/market/tdx_bars?code=000001&freq=day\")",
-      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('Status:', 'data' in d, 'Bars:', len\\(d.get\\('data',{}\\).get\\('bars',[]\\)\\) if d.get\\('data'\\) else 0, 'Note:', d.get\\('note',''\\)\\)\")"
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('Status:', 'data' in d, 'Bars:', len\\(d.get\\('data',{}\\).get\\('bars',[]\\)\\) if d.get\\('data'\\) else 0, 'Note:', d.get\\('note',''\\)\\)\")",
+      "Bash(curl -s http://localhost:5000/api/market/index)",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('OK' if d.get\\('data'\\) else 'FAIL:'+str\\(d.get\\('error',''\\)\\)\\)\")",
+      "Bash(curl -s http://localhost:5000/api/market/etf)",
+      "Bash(curl -s \"http://localhost:5000/api/market/quote?code=000001\")",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('OK:'+d.get\\('data',{}\\).get\\('name','?'\\)\\) if d.get\\('data'\\) else print\\('FAIL:'+str\\(d.get\\('error',''\\)\\)\\)\")",
+      "Bash(sed '1d;$d')",
+      "Bash(node --check /tmp/test_live.js)"
     ],
     "additionalDirectories": [
       "d:\\xxybacktest-master\\xxybacktest\\agents",
