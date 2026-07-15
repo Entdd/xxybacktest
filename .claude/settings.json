@@ -216,7 +216,8 @@
       "Bash(python -c \"import sys,json;d=json.load\\(sys.stdin\\);print\\('error:',d.get\\('error',''\\),'pts:',len\\(d.get\\('data',{}\\).get\\('realtime',[]\\)\\)\\)\")",
       "Bash(python -c \"import sys,json;d=json.load\\(sys.stdin\\);s=d.get\\('data',{}\\).get\\('sentiment',{}\\);print\\('zt:',s.get\\('zt_count'\\),'zb:',s.get\\('zb_count'\\),'dt:',s.get\\('dt_count'\\)\\)\")",
       "Bash(python -c \"import sys,json;d=json.load\\(sys.stdin\\);print\\('error:',d.get\\('error',''\\),'top:',len\\(d.get\\('data',{}\\).get\\('top',[]\\)\\)\\)\")",
-      "Bash(grep -oP 'sent-i.{0,100}')"
+      "Bash(grep -oP 'sent-i.{0,100}')",
+      "Bash(python -c \"import sys,re;html=sys.stdin.read\\(\\);m=re.search\\(r'<script>\\(.*?\\)</script>',html,re.DOTALL\\);js=m.group\\(1\\);print\\(js.count\\('{'\\),js.count\\('}'\\)\\)\")"
     ],
     "additionalDirectories": [
       "d:\\xxybacktest-master\\xxybacktest\\agents",
