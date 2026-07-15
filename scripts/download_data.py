@@ -18,8 +18,8 @@ from xxydb import xxydb
 # ====== 配置 ======
 DATA_PATH = "d:/xxybacktest-master/data"
 START_DATE = "2023-01-01"
-END_DATE = "2023-09-30"
-BATCH_DELAY = 0.3  # API 调用间隔 (秒)
+END_DATE = "2026-07-15"
+BATCH_DELAY = 0.15  # API 调用间隔 (秒)，baostock 免费不限速
 
 # ====== 步骤 0: 连接 ======
 def init_db():
@@ -34,30 +34,50 @@ def init_bs():
 
 # ====== 步骤 1: 获取目标股票列表 ======
 def get_target_stocks(db):
-    """获取需要下载的股票列表: 新闻数据中的 A 股 + 沪深300"""
+    """获取需要下载的股票列表: 全量 A 股"""
     codes = set()
 
-    # 从新闻情绪因子中取
-    sentiment_path = os.path.join(DATA_PATH, "news_sentiment_cache", "sentiment_factor.parquet")
-    if os.path.exists(sentiment_path):
-        df = pd.read_parquet(sentiment_path)
-        news_codes = set(df['instrument'].unique())
-        codes.update(news_codes)
-        print(f"[信息] 新闻数据覆盖 {len(news_codes)} 只 A 股")
+    print("[信息] 从 baostock 获取全量A股列表...")
+    rs = bs.query_stock_basic()
+    if rs is None:
+        print("[错误] query_stock_basic 返回 None")
+        return []
 
-    # 获取沪深 300 成分股 (兜底)
-    rs = bs.query_hs300_stocks()
-    hs300 = set()
-    while rs.next():
+    while True:
         row = rs.get_row_data()
-        code = row[0].replace('sh.', '').replace('SH.', '') + '.SH' if 'sh' in row[0].lower() else \
-               row[0].replace('sz.', '').replace('SZ.', '') + '.SZ'
-        hs300.add(code)
-    codes.update(hs300)
-    print(f"[信息] 沪深 300 补充 {len(hs300)} 只")
-    print(f"[信息] 合计目标: {len(codes)} 只股票")
+        if row is None:
+            break
+        if len(row) >= 6 and row[4] == '1':  # type=1 = 股票(非指数/ETF)
+            code = row[0]
+            if code.startswith('sh.'):
+                codes.add(code.replace('sh.', '') + '.SH')
+            elif code.startswith('sz.'):
+                codes.add(code.replace('sz.', '') + '.SZ')
 
-    return sorted(codes)
+    print(f"[信息] baostock 全量 A 股: {len(codes)} 只")
+
+    # ── 检查哪些已有足够数据 ──
+    try:
+        existing = db.query("""
+            SELECT instrument, COUNT(*) as n, MAX(date) as last_date
+            FROM daily_bar GROUP BY instrument
+        """).df()
+        skip = 0
+        need = []
+        for code in sorted(codes):
+            match = existing[existing["instrument"] == code]
+            if len(match) > 0:
+                n = match.iloc[0]["n"]
+                last = str(match.iloc[0]["last_date"])[:10]
+                # 数据 > 500 天且最新日期在近期 → 跳过
+                if n > 500 and last >= "2026-06-15":
+                    skip += 1
+                    continue
+            need.append(code)
+        print(f"[信息] 数据充足: {skip} 只, 需要下载: {len(need)} 只")
+        return need
+    except Exception:
+        return sorted(codes)
 
 # ====== 步骤 2: 下载日线数据 ======
 def download_daily_bar(db, codes):
@@ -161,13 +181,22 @@ def download_daily_bar(db, codes):
         combined = pd.concat(all_data, ignore_index=True)
         print(f"  总行数: {len(combined)}, {combined['instrument'].nunique()} 只股票")
 
-        # 写入 xxydb (按年分区)
+        # 写入 xxydb (按年分区)，与已有数据合并
         combined['year'] = combined['date'].dt.year
         for year, group in combined.groupby('year'):
             year_dir = os.path.join(DATA_PATH, "daily_bar", f"year={year}")
             os.makedirs(year_dir, exist_ok=True)
             out_path = os.path.join(year_dir, "data.parquet")
-            group.drop(columns=['year']).to_parquet(out_path, index=False)
+
+            # 如果已有数据，合并去重
+            if os.path.exists(out_path):
+                existing = pd.read_parquet(out_path)
+                group = pd.concat([existing, group.drop(columns=['year'])], ignore_index=True)
+                group = group.drop_duplicates(subset=["instrument", "date"], keep="last")
+            else:
+                group = group.drop(columns=['year'])
+
+            group.to_parquet(out_path, index=False)
             print(f"  写入 year={year}: {len(group)} 行")
 
         print(f"  [OK] 日线数据已写入")
