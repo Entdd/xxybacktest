@@ -60,6 +60,10 @@ def api_research_iwencai():
     query = request.args.get("q", "").strip()
     if not query:
         return err("缺少参数 q")
+    import os
+    if not os.environ.get("IWENCAI_API_KEY"):
+        return ok(None, note="no_api_key",
+            tip="问财语义搜索需要 API Key。申请地址: https://openapi.iwencai.com  |  设置: export IWENCAI_API_KEY=your_key")
     try:
         from xxybacktest.data_providers import iwencai_search, dedup_articles
         articles = iwencai_search(query)

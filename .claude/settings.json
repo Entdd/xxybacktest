@@ -196,7 +196,10 @@
       "Bash(curl -s \"http://localhost:5000/fundamentals\")",
       "Bash(curl -s \"http://localhost:5000/api/signals/northbound\")",
       "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); pts=d.get\\('data',{}\\).get\\('realtime',[]\\); print\\('Points:', len\\(pts\\), 'Sample:', pts[-3:] if len\\(pts\\)>3 else pts[:3]\\)\")",
-      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); pts=d.get\\('data',{}\\).get\\('realtime',[]\\); print\\('OK, points:', len\\(pts\\), 'Last:', pts[-1] if pts else 'empty'\\)\")"
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); pts=d.get\\('data',{}\\).get\\('realtime',[]\\); print\\('OK, points:', len\\(pts\\), 'Last:', pts[-1] if pts else 'empty'\\)\")",
+      "Bash(curl -s \"http://localhost:5000/api/research/iwencai?q=光伏\")",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d, ensure_ascii=False, indent=2\\)[:400]\\)\")",
+      "Bash(curl -s http://localhost:5000/research)"
     ],
     "additionalDirectories": [
       "d:\\xxybacktest-master\\xxybacktest\\agents",
