@@ -103,19 +103,19 @@
         "source_folder": "simulation_accounts",
         "schema": {
             "account_id": {
-                "type": "str",
+                "type": "object",
                 "desc": ""
             },
             "name": {
-                "type": "str",
+                "type": "object",
                 "desc": ""
             },
             "initialize_code": {
-                "type": "str",
+                "type": "object",
                 "desc": ""
             },
             "handle_data_code": {
-                "type": "str",
+                "type": "object",
                 "desc": ""
             },
             "initial_cash": {
@@ -123,27 +123,27 @@
                 "desc": ""
             },
             "start_date": {
-                "type": "str",
+                "type": "object",
                 "desc": ""
             },
             "data_path": {
-                "type": "str",
+                "type": "object",
                 "desc": ""
             },
             "status": {
-                "type": "str",
+                "type": "object",
                 "desc": ""
             },
             "asset_type": {
-                "type": "str",
+                "type": "object",
                 "desc": ""
             },
             "benchmark": {
-                "type": "str",
+                "type": "object",
                 "desc": ""
             },
             "created_at": {
-                "type": "datetime64[us]",
+                "type": "object",
                 "desc": ""
             },
             "updated_at": {
@@ -151,23 +151,23 @@
                 "desc": ""
             },
             "account_type": {
-                "type": "str",
+                "type": "object",
                 "desc": ""
             },
             "live_account_id": {
-                "type": "Int32",
+                "type": "object",
                 "desc": ""
             },
             "qmt_path": {
-                "type": "Int32",
+                "type": "object",
                 "desc": ""
             },
             "trigger_cron": {
-                "type": "str",
+                "type": "object",
                 "desc": ""
             },
             "execution_mode": {
-                "type": "str",
+                "type": "object",
                 "desc": ""
             },
             "rebalance_interval": {
