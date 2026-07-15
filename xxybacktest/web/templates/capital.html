@@ -67,7 +67,7 @@ async function loadDividend(){const b=$('dvBox');try{const j=await fj('/api/capi
 
 async function refreshAll(){curCode=$('stockCode').value.trim()||'000001';$('tick').textContent='加载 '+curCode+'...';await Promise.allSettled([loadFundFlow(),loadMargin(),loadBlockTrade(),loadHolderNum(),loadDividend()]);$('tick').textContent=curCode+' 已更新 '+new Date().toLocaleTimeString()}
 $('stockCode').addEventListener('keydown',e=>{if(e.key==='Enter')refreshAll()});
-refreshAll();
+(function init(){const p=new URLSearchParams(window.location.search);const c=p.get('code');if(c&&c.match(/^\d{6}/)){curCode=c;$('stockCode').value=c;document.title=c+' - 资金分析'}refreshAll()})();
 })();
 </script>
 {% endblock %}

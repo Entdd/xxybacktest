@@ -106,5 +106,29 @@
     {% endblock %}
 
     {% block extra_js %}{% endblock %}
+
+    <!-- ═══════════════ 跨页面股票代码保持 ═══════════════ -->
+    <script>
+    (function(){
+        // 从 URL 参数或 sessionStorage 恢复股票代码
+        var p = new URLSearchParams(window.location.search);
+        var code = p.get('code');
+        if (code && code.match(/^\d{6}/)) {
+            sessionStorage.setItem('lastCode', code);
+        }
+        // 给导航链接加上 ?code= 参数以保持上下文
+        var last = sessionStorage.getItem('lastCode');
+        if (last && last.match(/^\d{6}/) && !code) {
+            var links = document.querySelectorAll('.nav-header nav a');
+            links.forEach(function(a) {
+                if (a.pathname !== '/' && a.pathname !== '/tasks' && a.pathname !== '/factors' && a.pathname !== '/user') {
+                    if (!a.href.includes('?code=')) {
+                        a.href = a.pathname + '?code=' + last;
+                    }
+                }
+            });
+        }
+    })();
+    </script>
 </body>
 </html>

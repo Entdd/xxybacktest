@@ -172,7 +172,11 @@
       "Bash(start msedge *)",
       "Bash(start chrome *)",
       "Bash(mkdir -p d:/xxybacktest-master/.claude/agents)",
-      "Bash(git commit *)"
+      "Bash(git commit *)",
+      "Bash(curl -s \"http://localhost:5000/market?code=600519\")",
+      "Bash(curl -s \"http://localhost:5000/capital?code=600036\")",
+      "Bash(curl -s \"http://localhost:5000/announcements?code=000858\")",
+      "Bash(curl -s \"http://localhost:5000/signals?code=002415\")"
     ],
     "additionalDirectories": [
       "d:\\xxybacktest-master\\xxybacktest\\agents",
