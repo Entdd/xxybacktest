@@ -217,7 +217,10 @@
       "Bash(python -c \"import sys,json;d=json.load\\(sys.stdin\\);s=d.get\\('data',{}\\).get\\('sentiment',{}\\);print\\('zt:',s.get\\('zt_count'\\),'zb:',s.get\\('zb_count'\\),'dt:',s.get\\('dt_count'\\)\\)\")",
       "Bash(python -c \"import sys,json;d=json.load\\(sys.stdin\\);print\\('error:',d.get\\('error',''\\),'top:',len\\(d.get\\('data',{}\\).get\\('top',[]\\)\\)\\)\")",
       "Bash(grep -oP 'sent-i.{0,100}')",
-      "Bash(python -c \"import sys,re;html=sys.stdin.read\\(\\);m=re.search\\(r'<script>\\(.*?\\)</script>',html,re.DOTALL\\);js=m.group\\(1\\);print\\(js.count\\('{'\\),js.count\\('}'\\)\\)\")"
+      "Bash(python -c \"import sys,re;html=sys.stdin.read\\(\\);m=re.search\\(r'<script>\\(.*?\\)</script>',html,re.DOTALL\\);js=m.group\\(1\\);print\\(js.count\\('{'\\),js.count\\('}'\\)\\)\")",
+      "Bash(curl -s \"http://localhost:5000/api/signals/limit_pool?type=zt\")",
+      "Bash(python -c \"import sys,json;d=json.load\\(sys.stdin\\)['data'];print\\('zt stocks:',len\\(d.get\\('stocks',[]\\)\\)\\)\")",
+      "Bash(curl -s -o /dev/null -w \"Page: %{http_code}\" http://localhost:5000/signals)"
     ],
     "additionalDirectories": [
       "d:\\xxybacktest-master\\xxybacktest\\agents",
