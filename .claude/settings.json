@@ -220,7 +220,15 @@
       "Bash(python -c \"import sys,re;html=sys.stdin.read\\(\\);m=re.search\\(r'<script>\\(.*?\\)</script>',html,re.DOTALL\\);js=m.group\\(1\\);print\\(js.count\\('{'\\),js.count\\('}'\\)\\)\")",
       "Bash(curl -s \"http://localhost:5000/api/signals/limit_pool?type=zt\")",
       "Bash(python -c \"import sys,json;d=json.load\\(sys.stdin\\)['data'];print\\('zt stocks:',len\\(d.get\\('stocks',[]\\)\\)\\)\")",
-      "Bash(curl -s -o /dev/null -w \"Page: %{http_code}\" http://localhost:5000/signals)"
+      "Bash(curl -s -o /dev/null -w \"Page: %{http_code}\" http://localhost:5000/signals)",
+      "Bash(python -c \"import sys,json;d=json.load\\(sys.stdin\\);print\\(len\\(d.get\\('data',[]\\)\\),'stocks'\\)\")",
+      "Bash(python -c \"import sys,json;d=json.load\\(sys.stdin\\);print\\(len\\(d.get\\('data',{}\\).get\\('realtime',[]\\)\\),'points'\\)\")",
+      "Bash(python -c \"import sys,json;d=json.load\\(sys.stdin\\)['data']['sentiment'];print\\('zt:',d.get\\('zt_count'\\),'zb:',d.get\\('zb_count'\\),'dt:',d.get\\('dt_count'\\),'rate:',d.get\\('break_rate'\\)\\)\")",
+      "Bash(python -c \"import sys,json;d=json.load\\(sys.stdin\\)['data'];print\\(len\\(d.get\\('stocks',[]\\)\\),'stocks'\\);s=d.get\\('stocks',[]\\);print\\('    sample:',s[0]['name'],s[0]['code'],s[0].get\\('stat',''\\)\\) if s else None\")",
+      "Bash(curl -s \"http://localhost:5000/api/signals/limit_pool?type=zb\")",
+      "Bash(python -c \"import sys,json;d=json.load\\(sys.stdin\\)['data'];print\\(len\\(d.get\\('stocks',[]\\)\\),'stocks'\\)\")",
+      "Bash(curl -s \"http://localhost:5000/api/signals/limit_pool?type=dt\")",
+      "Bash(python -c \"import sys,json;d=json.load\\(sys.stdin\\)['data'];print\\(len\\(d.get\\('top',[]\\)\\),'industries'\\)\")"
     ],
     "additionalDirectories": [
       "d:\\xxybacktest-master\\xxybacktest\\agents",

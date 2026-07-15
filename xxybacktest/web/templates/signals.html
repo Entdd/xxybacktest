@@ -74,7 +74,7 @@ h+='<div class="sent-i" onclick="showLimitDetail(&#39;dt&#39;)" style="cursor:po
 h+='<div class="sent-i"><div class="sent-v">'+(s.break_rate||0)+'%</div><div class="sent-l">炸板率</div></div></div>';
 b.innerHTML=h;$('luDetail').style.display='none'}catch(e){b.innerHTML='<div class="err">-</div>'}}
 
-function showLimitDetail(type){
+window.showLimitDetail=function(type){
   var d=$('luDetail'),t='',c='';
   if(type==='zt'){t='涨停股';c='#ff5d5d'}
   else if(type==='zb'){t='炸板股';c='#faad14'}
