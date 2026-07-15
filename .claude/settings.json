@@ -263,7 +263,13 @@
       "Bash(python -u -c ' *)",
       "Bash(git commit -m '存档: 腾讯API前复权数据\\(5459只\\) + stock_status表 + 反转策略回测36% *)",
       "Bash(python strategy/live_strategies.py)",
-      "Bash(git commit -m '存档: 反转策略注册为模拟账户 sim_20260715_175604_516bfb \\(37%收益\\) *)"
+      "Bash(git commit -m '存档: 反转策略注册为模拟账户 sim_20260715_175604_516bfb \\(37%收益\\) *)",
+      "Bash(sleep 5 && cat /c/Users/Administrator/AppData/Local/Temp/claude/d--xxybacktest-master/02a59ba6-81f2-43aa-a925-bb1e161fa125/tasks/bsstomk7l.output 2>/dev/null)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5000/capital)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5000/account)",
+      "Bash(curl -s http://localhost:5000/api/accounts)",
+      "Bash(curl -s http://localhost:5000/account/sim_20260715_175604_516bfb)",
+      "Bash(start http://localhost:5000/account/sim_20260715_175604_516bfb)"
     ],
     "additionalDirectories": [
       "d:\\xxybacktest-master\\xxybacktest\\agents",
