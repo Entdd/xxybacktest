@@ -71,7 +71,7 @@ async function loadReport(rpt){if(rpt)curRpt=rpt;const b=$('rptTable');b.innerHT
 
 async function refreshAll(){if(loading)return;loading=true;curCode=$('stockCode').value.trim()||'600519';if(!curCode.match(/^\d{6}/)){curCode='600519';$('stockCode').value='600519'}$('tick').textContent='查询 '+curCode+'...';await Promise.allSettled([loadFinance(),loadF10(),loadReport()]);$('tick').textContent=curCode+' 已更新 '+new Date().toLocaleTimeString();loading=false}
 $('stockCode').addEventListener('keydown',e=>{if(e.key==='Enter')refreshAll()});
-(function init(){const p=new URLSearchParams(window.location.search);const c=p.get('code');if(c&&c.match(/^\d{6}/)){curCode=c;$('stockCode').value=c;document.title=c+' - 基础数据'}refreshAll()})();
+(function init(){const p=new URLSearchParams(window.location.search);const c=p.get('code');if(c&&c.match(/^\d{6}/)){curCode=c;$('stockCode').value=c;sessionStorage.setItem('lastCode',c);document.title=c+' - 基础数据'}else{const s=sessionStorage.getItem('lastCode');if(s&&s.match(/^\d{6}/)){curCode=s;$('stockCode').value=s}}refreshAll()})();
 })();
 </script>
 {% endblock %}

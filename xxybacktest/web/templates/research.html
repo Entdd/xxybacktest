@@ -44,7 +44,7 @@
 (function(){
 const $=s=>document.getElementById(s);let curCode=$('stockCode').value;
 function fmtCode(c){return c.replace('.SZ','').replace('.SH','').replace('.BJ','')}
-(function init(){const p=new URLSearchParams(window.location.search);const c=p.get('code');if(c&&c.match(/^\d{6}/)){curCode=c;$('stockCode').value=c;document.title=c+' - 研报分析'}refreshAll()})();
+(function init(){const p=new URLSearchParams(window.location.search);const c=p.get('code');if(c&&c.match(/^\d{6}/)){curCode=c;$('stockCode').value=c;sessionStorage.setItem('lastCode',c);document.title=c+' - 研报分析'}else{const s=sessionStorage.getItem('lastCode');if(s&&s.match(/^\d{6}/)){curCode=s;$('stockCode').value=s}}refreshAll()})();
 
 async function refreshAll(){$('tick').textContent='加载中...';await Promise.allSettled([loadReports(),loadEPS()]);$('tick').textContent=new Date().toLocaleTimeString()}
 

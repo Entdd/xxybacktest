@@ -76,7 +76,7 @@ async function loadIndustry(){const b=$('indBox');try{const j=await fj('/api/sig
 async function refreshAll(){if(loading)return;loading=true;curCode=$('stockCode').value.trim()||'000001';$('tick').textContent='刷新中...';if(!$('dtDate').value){$('dtDate').value=new Date().toISOString().slice(0,10)}await Promise.allSettled([loadHS(),loadNB(),loadDT(),loadLC(),loadLU(),loadHot(),loadIndustry()]);$('tick').textContent='已更新 '+new Date().toLocaleTimeString();loading=false}
 $('stockCode').addEventListener('keydown',e=>{if(e.key==='Enter')refreshAll()});
 $('dtDate').addEventListener('keydown',e=>{if(e.key==='Enter')loadDT()});
-(function init(){const p=new URLSearchParams(window.location.search);const c=p.get('code');if(c&&c.match(/^\d{6}/)){curCode=c;$('stockCode').value=c;document.title=c+' - 信号监控'}refreshAll()})();
+(function init(){const p=new URLSearchParams(window.location.search);const c=p.get('code');if(c&&c.match(/^\d{6}/)){curCode=c;$('stockCode').value=c;sessionStorage.setItem('lastCode',c);document.title=c+' - 信号监控'}else{const s=sessionStorage.getItem('lastCode');if(s&&s.match(/^\d{6}/)){curCode=s;$('stockCode').value=s}}refreshAll()})();
 })();
 </script>
 {% endblock %}

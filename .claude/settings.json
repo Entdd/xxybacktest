@@ -191,7 +191,9 @@
       "Bash(curl -s \"http://localhost:5000/api/research/eps_forecast?code=000001\")",
       "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d, ensure_ascii=False, indent=2\\)[:500]\\)\")",
       "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('OK' if d.get\\('data'\\) and d['data'].get\\('eps_forecast'\\) else 'FAIL:'+str\\(d.get\\('error',''\\)[:100]\\)\\); print\\('Rows:', d.get\\('data',{}\\).get\\('total',0\\) if d.get\\('data'\\) else 0\\)\")",
-      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d['data']['eps_forecast'], ensure_ascii=False, indent=2\\)[:400]\\)\")"
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d['data']['eps_forecast'], ensure_ascii=False, indent=2\\)[:400]\\)\")",
+      "Bash(curl -s \"http://localhost:5000/fundamentals?code=600036\")",
+      "Bash(curl -s \"http://localhost:5000/fundamentals\")"
     ],
     "additionalDirectories": [
       "d:\\xxybacktest-master\\xxybacktest\\agents",

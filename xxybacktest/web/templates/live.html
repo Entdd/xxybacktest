@@ -137,7 +137,7 @@ document.getElementById('periodTabs').addEventListener('click',e=>{if(!e.target.
 async function refreshAll(){$('tick').textContent='刷新中...';await Promise.allSettled([loadIndex(),loadETF(),loadQuote(),loadKline()]);$('tick').textContent='已更新 '+new Date().toLocaleTimeString()}
 $('stockCode').addEventListener('keydown',e=>{if(e.key==='Enter'){loadQuote();loadKline()}});
 
-(function init(){const p=new URLSearchParams(window.location.search);const c=p.get('code');if(c&&c.match(/^\d{6}/)){curCode=c;$('stockCode').value=c;document.title=c+' - 行情层'}refreshAll()})();
+(function init(){const p=new URLSearchParams(window.location.search);const c=p.get('code');if(c&&c.match(/^\d{6}/)){curCode=c;$('stockCode').value=c;sessionStorage.setItem('lastCode',c);document.title=c+' - 行情层'}else{const s=sessionStorage.getItem('lastCode');if(s&&s.match(/^\d{6}/)){curCode=s;$('stockCode').value=s}}refreshAll()})();
 })();
 </script>
 {% endblock %}

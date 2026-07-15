@@ -44,7 +44,7 @@
 <script>
 (function(){
 const $=s=>document.getElementById(s);let curCode=$('stockCode').value;
-(function init(){const p=new URLSearchParams(window.location.search);const c=p.get('code');if(c&&c.match(/^\d{6}/)){curCode=c;$('stockCode').value=c;document.title=c+' - 公告资讯'}refreshAll()})();
+(function init(){const p=new URLSearchParams(window.location.search);const c=p.get('code');if(c&&c.match(/^\d{6}/)){curCode=c;$('stockCode').value=c;sessionStorage.setItem('lastCode',c);document.title=c+' - 公告资讯'}else{const s=sessionStorage.getItem('lastCode');if(s&&s.match(/^\d{6}/)){curCode=s;$('stockCode').value=s}}refreshAll()})();
 
 function refreshAll(){$('tick').textContent='加载中...';Promise.allSettled([loadAnn(),loadCls(),loadNews()]).then(()=>$('tick').textContent=new Date().toLocaleTimeString())}
 
