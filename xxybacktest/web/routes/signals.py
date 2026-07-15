@@ -138,23 +138,28 @@ def api_signals_concept():
 @signals_bp.route("/api/live/limit-up")  # 向后兼容
 def api_signals_limit_up():
     try:
-        from xxybacktest.data_providers import limit_up_sentiment, em_zt_pool, em_zb_pool, em_dt_pool
+        from xxybacktest.data_providers import limit_up_sentiment
         today = datetime.now().strftime("%Y%m%d")
         sentiment = limit_up_sentiment(today)
-        zt_stocks = em_zt_pool(today)[:30]
-        zb_stocks = em_zb_pool(today)[:20]
-        dt_stocks = em_dt_pool(today)[:20]
-        # 简化为前端可用格式
-        def _fmt(pool):
-            return [{"code": s.get("code",""), "name": s.get("name",""),
-                     "pct": s.get("change_pct",0) or 0, "stat": s.get("zt_stat",""),
-                     "industry": s.get("industry","")} for s in pool]
-        return ok({
-            "sentiment": sentiment,
-            "zt_stocks": _fmt(zt_stocks),
-            "zb_stocks": _fmt(zb_stocks),
-            "dt_stocks": _fmt(dt_stocks),
-        })
+        return ok({"sentiment": sentiment})
+    except Exception as e:
+        return err(str(e))
+
+
+@signals_bp.route("/api/signals/limit_pool")
+def api_signals_limit_pool():
+    """按需获取涨停/炸板/跌停明细"""
+    ptype = request.args.get("type", "zt").strip()
+    try:
+        from xxybacktest.data_providers import em_zt_pool, em_zb_pool, em_dt_pool
+        today = datetime.now().strftime("%Y%m%d")
+        pool_map = {"zt": em_zt_pool, "zb": em_zb_pool, "dt": em_dt_pool}
+        fn = pool_map.get(ptype, em_zt_pool)
+        pool = fn(today)
+        stocks = [{"code": s.get("code",""), "name": s.get("name",""),
+                   "pct": s.get("change_pct",0) or 0, "stat": s.get("zt_stat",""),
+                   "industry": s.get("industry","")} for s in pool[:40]]
+        return ok({"type": ptype, "stocks": stocks, "total": len(stocks)})
     except Exception as e:
         return err(str(e))
 

@@ -206,7 +206,11 @@
       "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('Total stocks:', d.get\\('data',{}\\).get\\('total',0\\)\\); st=d.get\\('data',{}\\).get\\('stocks',[]\\); print\\('Sample:', json.dumps\\(st[:2], ensure_ascii=False, indent=2\\)[:300]\\)\")",
       "Bash(curl -s -o /dev/null -w \"signals: %{http_code}\" http://localhost:5000/signals)",
       "Bash(node --check /tmp/test_sig.js)",
-      "Bash(node --check /tmp/test_sig2.js)"
+      "Bash(node --check /tmp/test_sig2.js)",
+      "Bash(curl -s -o /dev/null -w \"%{time_total}s \" \"http://localhost:5000/api/signals/limit-up\")",
+      "Bash(curl -s \"http://localhost:5000/api/signals/limit-up\")",
+      "Bash(python -c \"import sys,json;d=json.load\\(sys.stdin\\)['data']['sentiment'];print\\('zt:',d.get\\('zt_count',0\\),'zb:',d.get\\('zb_count',0\\),'dt:',d.get\\('dt_count',0\\)\\)\")",
+      "Bash(python -c \"import sys,json;d=json.load\\(sys.stdin\\)['data']['sentiment'];print\\('zt:',d.get\\('zt_count'\\),'zb:',d.get\\('zb_count'\\),'dt:',d.get\\('dt_count'\\)\\)\")"
     ],
     "additionalDirectories": [
       "d:\\xxybacktest-master\\xxybacktest\\agents",

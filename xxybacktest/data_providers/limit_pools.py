@@ -120,7 +120,20 @@ def ths_limit_up_pool(date: str) -> list[dict]:
 
 def limit_up_sentiment(date: str) -> dict:
     """打板情绪温度计：连板梯队 + 炸板率 + 涨跌停对比"""
-    zt, zb, dt = em_zt_pool(date), em_zb_pool(date), em_dt_pool(date)
+    from concurrent.futures import ThreadPoolExecutor
+    from .core import EM_MIN_INTERVAL, set_em_interval
+    old_interval = EM_MIN_INTERVAL
+    set_em_interval(0)  # 临时关闭节流，并行取3个池
+    try:
+        with ThreadPoolExecutor(max_workers=3) as pool:
+            f_zt = pool.submit(em_zt_pool, date)
+            f_zb = pool.submit(em_zb_pool, date)
+            f_dt = pool.submit(em_dt_pool, date)
+            zt = f_zt.result()
+            zb = f_zb.result()
+            dt = f_dt.result()
+    finally:
+        set_em_interval(old_interval)  # 恢复节流
     ladder = {}
     for s in zt:
         ladder[s["limit_days"]] = ladder.get(s["limit_days"], 0) + 1
