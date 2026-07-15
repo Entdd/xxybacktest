@@ -157,8 +157,9 @@ def api_signals_limit_pool():
         fn = pool_map.get(ptype, em_zt_pool)
         pool = fn(today)
         stocks = [{"code": s.get("code",""), "name": s.get("name",""),
-                   "pct": s.get("change_pct",0) or 0, "stat": s.get("zt_stat",""),
+                   "pct": s.get("pct",0) or 0, "stat": s.get("zt_stat",""),
                    "industry": s.get("industry","")} for s in pool[:40]]
+        stocks.sort(key=lambda s: s["pct"], reverse=True)
         return ok({"type": ptype, "stocks": stocks, "total": len(stocks)})
     except Exception as e:
         return err(str(e))
