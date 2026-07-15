@@ -29,15 +29,30 @@ def api_signals_hot_stocks():
         if df is None or df.empty:
             return ok([], note="no_data")
         rows = []
+        codes = []
         for _, r in df.iterrows():
+            code = str(r.get("代码", r.get("code", "")))
+            codes.append(code)
             rows.append({
-                "code": str(r.get("代码", r.get("code", ""))),
+                "code": code,
                 "name": str(r.get("名称", r.get("name", ""))),
                 "reason": str(r.get("题材归因", r.get("reason", ""))),
-                "change_pct": float(r.get("涨幅%", r.get("zhangfu", 0) or 0)),
-                "turnover": float(r.get("换手率%", r.get("huanshou", 0) or 0)),
-                "amount": float(r.get("成交额", r.get("chengjiaoe", 0) or 0)),
+                "change_pct": 0.0,
+                "turnover": 0.0,
+                "amount": 0.0,
             })
+        # 批量补实时行情(腾讯)
+        if codes:
+            try:
+                from xxybacktest.data_providers import tencent_quote
+                q = tencent_quote(codes)
+                for r in rows:
+                    info = q.get(r["code"], {})
+                    r["change_pct"] = info.get("change_pct", 0) or 0
+                    r["turnover"] = info.get("turnover_pct", 0) or 0
+                    r["amount"] = info.get("amount_wan", 0) or 0
+            except Exception:
+                pass
         return ok(rows)
     except Exception as e:
         return err(str(e))

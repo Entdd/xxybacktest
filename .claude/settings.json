@@ -230,7 +230,9 @@
       "Bash(curl -s \"http://localhost:5000/api/signals/limit_pool?type=dt\")",
       "Bash(python -c \"import sys,json;d=json.load\\(sys.stdin\\)['data'];print\\(len\\(d.get\\('top',[]\\)\\),'industries'\\)\")",
       "Bash(python -c \"import sys,json;st=json.load\\(sys.stdin\\)['data']['stocks'];print\\('First 5 pcts:', [s['pct'] for s in st[:5]]\\);print\\('Last 5 pcts:', [s['pct'] for s in st[-5:]]\\)\")",
-      "Bash(python -c \"import sys,json;st=json.load\\(sys.stdin\\)['data']['stocks'];print\\('Total:',len\\(st\\)\\);print\\('Top 5:'\\);[print\\(f'  {s[\\\\\"name\\\\\"]} {s[\\\\\"code\\\\\"]} {s[\\\\\"pct\\\\\"]}%'\\) for s in st[:5]];print\\('Sorted OK' if all\\(st[i]['pct']>=st[i+1]['pct'] for i in range\\(len\\(st\\)-1\\)\\) else 'SORT FAIL'\\)\")"
+      "Bash(python -c \"import sys,json;st=json.load\\(sys.stdin\\)['data']['stocks'];print\\('Total:',len\\(st\\)\\);print\\('Top 5:'\\);[print\\(f'  {s[\\\\\"name\\\\\"]} {s[\\\\\"code\\\\\"]} {s[\\\\\"pct\\\\\"]}%'\\) for s in st[:5]];print\\('Sorted OK' if all\\(st[i]['pct']>=st[i+1]['pct'] for i in range\\(len\\(st\\)-1\\)\\) else 'SORT FAIL'\\)\")",
+      "Bash(python -c \"import sys,json;d=json.load\\(sys.stdin\\);r=d['data'][0];print\\('Fields:',list\\(r.keys\\(\\)\\)\\);print\\('Sample:',r['name'],r['code'],'pct:',r.get\\('change_pct'\\),'turnover:',r.get\\('turnover'\\)\\)\")",
+      "Bash(python -c \"import sys,json;d=json.load\\(sys.stdin\\)['data'];print\\('Total:',len\\(d\\)\\);s=d[0];print\\('First:',s['name'],s['code'],'pct:',s['change_pct'],'turnover:',s['turnover']\\);pcts=[r['change_pct'] for r in d];print\\('Non-zero pcts:',sum\\(1 for p in pcts if p!=0\\),'/',len\\(pcts\\)\\)\")"
     ],
     "additionalDirectories": [
       "d:\\xxybacktest-master\\xxybacktest\\agents",
