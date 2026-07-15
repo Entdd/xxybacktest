@@ -258,7 +258,10 @@
       "Read(//c/Users/Administrator/AppData/Local/Temp/claude/**)",
       "Bash(python -u scripts/fast_download.py)",
       "Bash(python -u scripts/download_tencent.py)",
-      "Bash(sleep 30 && cat /c/Users/Administrator/AppData/Local/Temp/claude/d--xxybacktest-master/02a59ba6-81f2-43aa-a925-bb1e161fa125/tasks/btqodkbqf.output 2>/dev/null)"
+      "Bash(sleep 30 && cat /c/Users/Administrator/AppData/Local/Temp/claude/d--xxybacktest-master/02a59ba6-81f2-43aa-a925-bb1e161fa125/tasks/btqodkbqf.output 2>/dev/null)",
+      "Bash(git commit -m '存档: 策略框架\\(5个示例\\) + 数据下载脚本\\(TDX/mootdx/baostock/腾讯\\) + 因子教程 *)",
+      "Bash(python -u -c ' *)",
+      "Bash(git commit -m '存档: 腾讯API前复权数据\\(5459只\\) + stock_status表 + 反转策略回测36% *)"
     ],
     "additionalDirectories": [
       "d:\\xxybacktest-master\\xxybacktest\\agents",
