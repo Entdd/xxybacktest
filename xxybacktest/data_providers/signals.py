@@ -323,7 +323,7 @@ def lockup_expiry(code: str, trade_date: str, forward_days: int = 90) -> dict:
 
 def industry_comparison(top_n: int = 20) -> dict:
     """全行业涨跌幅排名。返回: {top: [...], bottom: [...], total: int}"""
-    url = "https://push2.eastmoney.com/api/qt/clist/get"
+    url = "https://push2ex.eastmoney.com/api/qt/clist/get"
     params = {
         "pn": "1", "pz": "100", "po": "1", "np": "1",
         "fltt": "2", "invt": "2", "fid": "f3",
