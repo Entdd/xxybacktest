@@ -41,8 +41,12 @@ def api_research_eps_forecast():
     try:
         from xxybacktest.data_providers import ths_eps_forecast
         pure = code.replace(".SZ","").replace(".SH","").replace(".BJ","")
-        data = ths_eps_forecast(pure)
-        return ok({"code": pure, "eps_forecast": data})
+        df = ths_eps_forecast(pure)
+        if df is None or df.empty:
+            return ok({"code": pure, "eps_forecast": [], "note": "no_data"})
+        # DataFrame -> list of dicts for JSON
+        data = df.to_dict(orient="records")
+        return ok({"code": pure, "eps_forecast": data, "columns": list(df.columns), "total": len(data)})
     except Exception as e:
         return err(str(e))
 
