@@ -90,7 +90,7 @@ async function showIndustry(code,name){
     });
     h+='</div>';d.innerHTML=h;
   }catch(e){d.innerHTML='<div class="err">加载失败: '+e.message+'</div>'}
-}}
+}
 
 async function refreshAll(){if(loading)return;loading=true;curCode=$('stockCode').value.trim()||'000001';$('tick').textContent='刷新中...';if(!$('dtDate').value){$('dtDate').value=new Date().toISOString().slice(0,10)}await Promise.allSettled([loadHS(),loadNB(),loadDT(),loadLC(),loadLU(),loadHot(),loadIndustry()]);$('tick').textContent='已更新 '+new Date().toLocaleTimeString();loading=false}
 $('stockCode').addEventListener('keydown',e=>{if(e.key==='Enter')refreshAll()});
