@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>研报层 · 研报检索</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+<style>
+  :root{--bg:#0f1218;--panel:#171c26;--panel2:#1e2531;--line:#2a3240;--text:#e6ebf2;--sub:#8a94a6;--accent:#4c8dff;--green:#26c281;--red:#ff5d5d;--gold:#f5d547}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;font-size:14px}
+  .wrap{max-width:1520px;margin:0 auto;padding:16px}
+  header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:8px}
+  h1{font-size:19px;font-weight:600}h1 .dot{color:var(--accent)}
+  .hr{display:flex;align-items:center;gap:8px}.btn{background:var(--accent);color:#fff;border:none;border-radius:6px;padding:6px 14px;cursor:pointer;font-size:12px}.btn:hover{opacity:.9}
+  .navlink{color:var(--sub);font-size:11px;text-decoration:none;margin-left:4px}.navlink:hover{color:var(--accent)}
+  .ut{color:var(--sub);font-size:11px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.mt12{margin-top:12px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .ch{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line)}
+  .ch h3{font-size:12px;font-weight:500}.ch .tag{font-size:10px;color:var(--sub)}
+  .cb{flex:1}.cb.pad{padding:10px 14px}.cb.scrl{overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--line) transparent;padding:8px 14px}
+  .cb.scrl::-webkit-scrollbar{width:4px}.cb.scrl::-webkit-scrollbar-thumb{background:var(--line);border-radius:2px}
+  .loading{text-align:center;color:var(--sub);padding:30px;font-size:12px}
+  .loading::before{content:"";display:inline-block;width:12px;height:12px;border:2px solid var(--line);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin-right:6px;vertical-align:middle}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .err{text-align:center;color:var(--sub);padding:20px;font-size:11px}
+  .report-row{padding:8px 0;border-bottom:1px solid var(--line);font-size:11px;line-height:1.5}.report-row:last-child{border-bottom:none}
+  .report-title{font-weight:600;color:var(--text)}.report-meta{color:var(--sub);font-size:10px}.report-rating{color:var(--accent);font-weight:500}
+  .eps-table{width:100%;font-size:11px;border-collapse:collapse}.eps-table th{background:var(--panel2);padding:6px 10px;text-align:left;font-weight:500;color:var(--sub)}.eps-table td{padding:6px 10px;border-bottom:1px solid var(--line)}
+  .iw-input{display:flex;gap:8px;margin-bottom:12px}.iw-input input{flex:1;background:var(--panel2);border:1px solid var(--line);color:var(--text);border-radius:6px;padding:8px 12px;font-size:13px}
+  .art-row{padding:6px 0;border-bottom:1px solid var(--line);font-size:11px}.art-row a{color:var(--accent);text-decoration:none}.art-row a:hover{text-decoration:underline}
+  @media(max-width:1000px){.grid2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>研报分析 <span class="dot">●</span></h1>
+  <div class="hr">
+    <span class="ut" id="tick">加载中...</span>
+    <button class="btn" onclick="refreshAll()">刷新全部</button>
+    <input id="stockCode" style="background:var(--panel2);border:1px solid var(--line);color:var(--text);border-radius:5px;padding:5px 10px;font-size:12px;width:80px" placeholder="000001" value="000001">
+    <a class="navlink" href="/">🏠</a><a class="navlink" href="/market">行情</a><a class="navlink" href="/research" style="color:var(--gold)">研报</a><a class="navlink" href="/signals">信号</a><a class="navlink" href="/capital">资金</a><a class="navlink" href="/fundamentals">基础</a><a class="navlink" href="/announcements">公告</a><a class="navlink" href="/factors">因子</a>
+  </div>
+</header>
+
+<div class="grid2">
+  <div class="card"><div class="ch"><h3>东财研报列表</h3><span class="tag" id="rpTag"></span></div><div class="cb scrl" id="rpBox" style="max-height:500px"><div class="loading">加载中</div></div></div>
+  <div class="card"><div class="ch"><h3>同花顺一致预期EPS</h3><span class="tag" id="epsTag"></span></div><div class="cb scrl pad" id="epsBox" style="max-height:500px"><div class="loading">加载中</div></div></div>
+</div>
+
+<div class="card mt12"><div class="ch"><h3>问财语义搜索</h3><span class="tag" id="iwTag"></span></div>
+  <div class="cb pad">
+    <div class="iw-input"><input id="iwQuery" placeholder="搜索关键词，如：光伏板块2026年增速预测"><button class="btn" onclick="doIwencai()">搜索</button></div>
+    <div class="scrl" id="iwBox" style="max-height:400px"><div class="loading" style="display:none" id="iwLoad"></div><div style="color:var(--sub);font-size:12px;text-align:center;padding:20px">输入关键词后点击搜索</div></div>
+  </div>
+</div>
+</div>
+
+<script>
+const $=s=>document.getElementById(s);let curCode=$('stockCode').value;
+
+(function init(){
+  const p=new URLSearchParams(window.location.search);const c=p.get('code');
+  if(c&&c.match(/^\d{6}/)){curCode=c;$('stockCode').value=c;document.title=c+' - 研报分析'}
+  refreshAll();
+})();
+
+function refreshAll(){
+  $('tick').textContent='加载中...';
+  Promise.allSettled([loadReports(),loadEPS()]).then(()=>$('tick').textContent=new Date().toLocaleTimeString());
+}
+
+async function loadReports(){
+  const box=$('rpBox'),tag=$('rpTag');
+  box.innerHTML='<div class="loading">加载中</div>';
+  try{
+    const r=await fetch(`/api/research/reports?code=${curCode}`);const d=await r.json();
+    if(!d.data||!d.data.reports||d.data.reports.length===0){box.innerHTML='<div class="err">暂无研报数据</div>';tag.textContent='0条';return}
+    const reps=d.data.reports;tag.textContent=reps.length+'条';
+    box.innerHTML=reps.slice(0,30).map(r=>`<div class="report-row">
+      <div class="report-title">${r.title||''}</div>
+      <div class="report-meta">${r.orgName||''} · ${r.publishDate||''} · <span class="report-rating">${r.rating||''}</span></div>
+    </div>`).join('');
+  }catch(e){box.innerHTML=`<div class="err">加载失败: ${e.message}</div>`}
+}
+
+async function loadEPS(){
+  const box=$('epsBox'),tag=$('epsTag');
+  box.innerHTML='<div class="loading">加载中</div>';
+  try{
+    const r=await fetch(`/api/research/eps_forecast?code=${curCode}`);const d=await r.json();
+    if(!d.data||!d.data.eps_forecast){box.innerHTML='<div class="err">暂无EPS数据</div>';tag.textContent='无';return}
+    const eps=d.data.eps_forecast;
+    // EPS can be list or single value
+    if(Array.isArray(eps)&&eps.length>0){
+      tag.textContent=eps.length+'期';
+      const keys=Object.keys(eps[0]);
+      box.innerHTML=`<table class="eps-table"><tr>${keys.map(k=>`<th>${k}</th>`).join('')}</tr>${eps.map(r=>`<tr>${keys.map(k=>`<td>${r[k]||'-'}</td>`).join('')}</tr>`).join('')}</table>`;
+    }else if(typeof eps==='object'){
+      tag.textContent=Object.keys(eps).length+'项';
+      box.innerHTML=Object.entries(eps).map(([k,v])=>`<div style="padding:4px 0;font-size:12px"><span style="color:var(--sub)">${k}:</span> <b>${v}</b></div>`).join('');
+    }else{
+      box.innerHTML=`<div style="padding:10px;font-size:12px">${JSON.stringify(eps)}</div>`;
+    }
+  }catch(e){box.innerHTML=`<div class="err">加载失败: ${e.message}</div>`}
+}
+
+async function doIwencai(){
+  const q=$('iwQuery').value.trim();if(!q)return;
+  const box=$('iwBox'),load=$('iwLoad'),tag=$('iwTag');
+  load.style.display='block';box.innerHTML='';
+  try{
+    const r=await fetch(`/api/research/iwencai?q=${encodeURIComponent(q)}`);const d=await r.json();
+    load.style.display='none';
+    if(!d.data||!d.data.articles||d.data.articles.length===0){box.innerHTML='<div class="err">无搜索结果</div>';tag.textContent='0条';return}
+    tag.textContent=d.data.total+'条';
+    box.innerHTML=d.data.articles.map(a=>`<div class="art-row"><a href="${a.url||'#'}" target="_blank">${a.title||''}</a> <span style="color:var(--sub);font-size:10px">${a.source||''} ${a.time||''}</span></div>`).join('');
+  }catch(e){load.style.display='none';box.innerHTML=`<div class="err">搜索失败: ${e.message}</div>`}
+}
+</script>
+</body>
+</html>

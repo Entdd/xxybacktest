@@ -167,10 +167,15 @@
       "Bash(curl -s \"http://localhost:5000/fundamentals?code=000001\")",
       "Bash(curl -s \"http://localhost:5000/api/live/finance?code=000001\")",
       "Bash(python -c \"import sys,json;d=json.load\\(sys.stdin\\);print\\('ok' if d.get\\('data'\\) else d.get\\('error',d.get\\('note','fail'\\)\\)\\)\")",
-      "Bash(git commit -m '存档: a-stock-data迁移 + Web实时看板\\(live/signals/capital/fundamentals\\) + 导航联动 *)"
+      "Bash(git commit -m '存档: a-stock-data迁移 + Web实时看板\\(live/signals/capital/fundamentals\\) + 导航联动 *)",
+      "Bash(start http://localhost:5000)",
+      "Bash(start msedge *)",
+      "Bash(start chrome *)",
+      "Bash(mkdir -p d:/xxybacktest-master/.claude/agents)"
     ],
     "additionalDirectories": [
-      "d:\\xxybacktest-master\\xxybacktest\\agents"
+      "d:\\xxybacktest-master\\xxybacktest\\agents",
+      "d:\\xxybacktest-master\\.claude"
     ]
   }
 }
