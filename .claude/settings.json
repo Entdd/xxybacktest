@@ -176,7 +176,11 @@
       "Bash(curl -s \"http://localhost:5000/market?code=600519\")",
       "Bash(curl -s \"http://localhost:5000/capital?code=600036\")",
       "Bash(curl -s \"http://localhost:5000/announcements?code=000858\")",
-      "Bash(curl -s \"http://localhost:5000/signals?code=002415\")"
+      "Bash(curl -s \"http://localhost:5000/signals?code=002415\")",
+      "Bash(curl -s http://localhost:5000/market)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5000/market)",
+      "Bash(curl -s \"http://localhost:5000/api/market/tdx_bars?code=000001&freq=day\")",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('Status:', 'data' in d, 'Bars:', len\\(d.get\\('data',{}\\).get\\('bars',[]\\)\\) if d.get\\('data'\\) else 0, 'Note:', d.get\\('note',''\\)\\)\")"
     ],
     "additionalDirectories": [
       "d:\\xxybacktest-master\\xxybacktest\\agents",
