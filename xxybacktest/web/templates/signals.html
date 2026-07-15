@@ -49,7 +49,7 @@
   <div class="card"><div class="card-hd"><h3>今日打板</h3></div><div class="card-bd pad" id="luBox"><div class="loading">加载中</div></div></div>
   <div class="card"><div class="card-hd"><h3>人气榜 TOP12</h3><span class="ch-tag" id="hotTag"></span></div><div class="card-bd scrl" id="hotBox" style="max-height:300px"><div class="loading">加载中</div></div></div>
 </div>
-<div class="card mt12"><div class="card-hd"><h3>行业热度</h3><span class="ch-tag" id="indTag"></span></div><div class="card-bd scrl" id="indBox" style="max-height:300px;padding:8px 14px"><div class="loading">加载中</div></div></div>
+<div class="card mt12"><div class="card-hd"><h3>行业热度</h3><span class="ch-tag" id="indTag"></span></div><div class="card-bd scrl" id="indBox" style="max-height:340px;padding:8px 14px"><div class="loading">加载中</div></div><div class="card-bd scrl" id="indDetail" style="display:none;max-height:400px;border-top:1px solid #2a3240;background:#1e2531"></div></div>
 {% endblock %}
 
 {% block extra_js %}
@@ -71,7 +71,26 @@ async function loadLU(){const b=$('luBox');try{const j=await fj('/api/signals/li
 
 async function loadHot(){const b=$('hotBox');try{const j=await fj('/api/signals/hot');if(j.error||!j.data?.length){b.innerHTML='<div class="err">暂无数据</div>';return}$('hotTag').textContent=j.data.length+'只';b.innerHTML='<table class="hot-table">'+j.data.map(h=>'<tr><td class="hr">#'+h.rank+'</td><td class="hn"><a href="/market?code='+h.code+'" style="color:#e6ebf2;text-decoration:none">'+h.name+'</a></td><td class="hp '+up(h.pct||0)+'">'+sg(h.pct||0)+(h.pct||0).toFixed(1)+'%</td><td class="hh">'+((h.heat||0)/10000).toFixed(0)+'万</td></tr>').join('')+'</table>'}catch(e){b.innerHTML='<div class="err">-</div>'}}
 
-async function loadIndustry(){const b=$('indBox');try{const j=await fj('/api/signals/industry');if(j.error||!j.data){b.innerHTML='<div class="err">暂无数据</div>';return}$('indTag').textContent=j.data.source||'';const top=j.data.top||[];if(!top.length){b.innerHTML='<div class="err">暂无数据</div>';return}b.innerHTML=top.map((r,i)=>{const p=r.change_pct||0,lc=r.leader_change||0;return'<div class="ind-row"><span class="ind-rank'+(i<3?' top':'')+'">'+r.rank+'</span><span class="ind-name">'+r.name+'</span><span class="ind-pct '+up(p)+'">'+(p?sg(p)+p+'%':'')+'</span>'+(r.leader?'<a href="/market?code='+r.leader+'" style="color:#4c8dff;text-decoration:none;font-size:10px" title="领涨股">🏷'+r.leader+'</a> <span class="'+up(lc)+'" style="font-size:10px">'+sg(lc)+lc.toFixed(1)+'%</span>':'')+'<span style="color:#8a94a6;font-size:10px;margin-left:auto">'+(r.up_count||0)+'↑ '+(r.down_count||0)+'↓</span></div>'}).join('')}catch(e){b.innerHTML='<div class="err">-</div>'}}
+let curInd='';
+async function loadIndustry(){const b=$('indBox');try{const j=await fj('/api/signals/industry');if(j.error||!j.data){b.innerHTML='<div class="err">暂无数据</div>';return}$('indTag').textContent=(j.data.source||'')+' | 点击行业查看成分股';const top=j.data.top||[];if(!top.length){b.innerHTML='<div class="err">暂无数据</div>';return}b.innerHTML=top.map((r,i)=>{const p=r.change_pct||0,lc=r.leader_change||0;return'<div class="ind-row" onclick="showIndustry(\''+r.code+'\',\''+r.name+'\')" style="cursor:pointer" title="点击查看'+r.name+'成分股"><span class="ind-rank'+(i<3?' top':'')+'">'+r.rank+'</span><span class="ind-name">'+r.name+'</span><span class="ind-pct '+up(p)+'">'+(p?sg(p)+p+'%':'')+'</span>'+(r.leader?'<a href="/market?code='+r.leader+'" onclick="event.stopPropagation()" style="color:#4c8dff;text-decoration:none;font-size:10px" title="领涨股">🏷'+r.leader+'</a> <span class="'+up(lc)+'" style="font-size:10px">'+sg(lc)+lc.toFixed(1)+'%</span>':'')+'<span style="color:#8a94a6;font-size:10px;margin-left:auto">'+(r.up_count||0)+'↑ '+(r.down_count||0)+'↓</span></div>'}).join('')}catch(e){b.innerHTML='<div class="err">-</div>'}}
+
+async function showIndustry(code,name){
+  const d=$('indDetail');
+  if(curInd===code){d.style.display='none';curInd='';return}
+  curInd=code;d.style.display='block';d.innerHTML='<div class="loading">加载 '+name+' 成分股...</div>';
+  try{
+    const j=await fj('/api/signals/industry_stocks?code='+code);
+    if(j.error||!j.data||!j.data.stocks||!j.data.stocks.length){d.innerHTML='<div class="err">无成分股数据</div>';return}
+    const st=j.data.stocks;
+    let h='<div style="padding:10px 14px;font-size:11px;font-weight:600;color:#4c8dff">📋 '+name+' · '+st.length+'只成分股 <span style="color:#8a94a6;font-size:10px;font-weight:400;cursor:pointer" onclick="curInd=\'\';$(\'indDetail\').style.display=\'none\'">[关闭]</span></div>';
+    h+='<div style="display:flex;flex-wrap:wrap;gap:6px;padding:6px 14px 12px">';
+    st.forEach(s=>{
+      const cls=up(s.change_pct||0);
+      h+='<span style="background:#171c26;padding:4px 10px;border-radius:5px;font-size:11px;white-space:nowrap"><a href="/market?code='+s.code+'" style="color:#e6ebf2;text-decoration:none" title="行情">'+s.name+'</a> <a href="/fundamentals?code='+s.code+'" style="color:#8a94a6;text-decoration:none;font-size:9px" title="基础">📊</a> <span style="color:#8a94a6;font-size:10px">'+s.code+'</span> <span class="'+cls+'" style="font-weight:500">'+sg(s.change_pct)+(s.change_pct||0).toFixed(1)+'%</span></span>';
+    });
+    h+='</div>';d.innerHTML=h;
+  }catch(e){d.innerHTML='<div class="err">加载失败: '+e.message+'</div>'}
+}}
 
 async function refreshAll(){if(loading)return;loading=true;curCode=$('stockCode').value.trim()||'000001';$('tick').textContent='刷新中...';if(!$('dtDate').value){$('dtDate').value=new Date().toISOString().slice(0,10)}await Promise.allSettled([loadHS(),loadNB(),loadDT(),loadLC(),loadLU(),loadHot(),loadIndustry()]);$('tick').textContent='已更新 '+new Date().toLocaleTimeString();loading=false}
 $('stockCode').addEventListener('keydown',e=>{if(e.key==='Enter')refreshAll()});

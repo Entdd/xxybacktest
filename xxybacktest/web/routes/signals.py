@@ -188,3 +188,44 @@ def api_signals_industry():
             return ok({"top": top[:10], "bottom": [], "total": len(cnt), "source": "THS"})
     except Exception: pass
     return err("Industry unavailable")
+
+
+# ═══════════════════════════════════════════════════════════════
+# 行业下钻：点击行业 → 该行业所有股票
+# ═══════════════════════════════════════════════════════════════
+
+@signals_bp.route("/api/signals/industry_stocks")
+def api_signals_industry_stocks():
+    code = request.args.get("code", "").strip()
+    if not code:
+        return err("缺少参数 code (行业代码, 如 BK1300)")
+    try:
+        from xxybacktest.data_providers.core import em_get, UA
+        url = "https://push2.eastmoney.com/api/qt/clist/get"
+        params = {
+            "pn": "1", "pz": "200", "po": "1", "np": "1",
+            "fltt": "2", "invt": "2", "fid": "f3",
+            "fs": f"b:{code}+t:2",
+            "fields": "f2,f3,f4,f12,f13,f14,f20,f21,f40,f100",
+        }
+        headers = {"User-Agent": UA}
+        r = em_get(url, params=params, headers=headers, timeout=15)
+        d = r.json()
+        items = d.get("data", {}).get("diff", [])
+        stocks = []
+        for item in items:
+            stocks.append({
+                "code": item.get("f12", ""),
+                "name": item.get("f14", ""),
+                "price": item.get("f2", 0) or 0,
+                "change_pct": item.get("f3", 0) or 0,
+                "change_amt": item.get("f4", 0) or 0,
+                "mcap_yi": (item.get("f20", 0) or 0) / 1e8,
+                "float_mcap_yi": (item.get("f21", 0) or 0) / 1e8,
+                "turnover_pct": item.get("f40", 0) or 0,
+                "industry": item.get("f100", ""),
+                "total_mcap": item.get("f20", 0) or 0,
+            })
+        return ok({"code": code, "stocks": stocks, "total": len(stocks)})
+    except Exception as e:
+        return err(str(e))
