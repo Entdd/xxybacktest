@@ -52,6 +52,10 @@ def api_signals_hot_stocks():
 def api_signals_northbound():
     try:
         from xxybacktest.data_providers import hsgt_realtime, _load_northbound_history
+        import math
+        def safe_float(v, default=0.0):
+            try: f = float(v); return default if math.isnan(f) else f
+            except: return default
         realtime = hsgt_realtime()
         history = _load_northbound_history(10)
         points = []
@@ -59,16 +63,16 @@ def api_signals_northbound():
             for _, r in realtime.iterrows():
                 points.append({
                     "time": str(r.get("time", "")),
-                    "hgt": float(r.get("hgt_yi", 0) or 0),
-                    "sgt": float(r.get("sgt_yi", 0) or 0),
+                    "hgt": safe_float(r.get("hgt_yi", 0)),
+                    "sgt": safe_float(r.get("sgt_yi", 0)),
                 })
         hist_rows = []
         if history is not None and not history.empty:
             for _, r in history.iterrows():
                 hist_rows.append({
                     "date": str(r.get("date", ""))[:10],
-                    "hgt": float(r.get("hgt", 0) or 0),
-                    "sgt": float(r.get("sgt", 0) or 0),
+                    "hgt": safe_float(r.get("hgt", 0)),
+                    "sgt": safe_float(r.get("sgt", 0)),
                 })
         return ok({"realtime": points, "history": hist_rows, "total_points": len(points)})
     except Exception as e:
