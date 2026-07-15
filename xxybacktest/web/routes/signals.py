@@ -230,6 +230,18 @@ def api_signals_industry():
                         "name": str(r.get(name_col, "")) if name_col else "",
                         "pct": 0,
                     })
+            # 批量补实时涨跌幅
+            all_codes = list({s["code"] for stocks in groups.values() for s in stocks if s["code"]})
+            if all_codes:
+                try:
+                    from xxybacktest.data_providers import tencent_quote
+                    q = tencent_quote(all_codes)
+                    for stocks in groups.values():
+                        for s in stocks:
+                            info = q.get(s["code"], {})
+                            s["pct"] = info.get("change_pct", 0) or 0
+                except Exception:
+                    pass
             # 按每组股票数量排序, 取 top10 题材, 每组 top5
             sorted_groups = sorted(groups.items(), key=lambda x: len(x[1]), reverse=True)
             top = []
