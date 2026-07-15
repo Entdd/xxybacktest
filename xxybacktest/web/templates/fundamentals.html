@@ -1,249 +1,77 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>基础数据层 · 基本面</title>
+{% extends "base.html" %}
+{% block title %}基础数据层 · 基本面{% endblock %}
+{% block body_class %}dark{% endblock %}
+
+{% block extra_css %}
 <style>
-:root{--bg:#0f1218;--panel:#171c26;--panel2:#1e2531;--line:#2a3240;--text:#e6ebf2;--sub:#8a94a6;--accent:#4c8dff;--green:#26c281;--red:#ff5d5d;--gold:#f5d547}
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--text);font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;font-size:14px}
-.wrap{max-width:1500px;margin:0 auto;padding:14px}
-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px;flex-wrap:wrap}
-h1{font-size:18px;font-weight:600}h1 .dot{color:var(--accent)}
-.hr{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.btn{background:var(--accent);color:#fff;border:none;border-radius:5px;padding:5px 12px;cursor:pointer;font-size:11px}.btn:hover{opacity:.9}
-.btn-sm{background:var(--panel2);border:1px solid var(--line);color:var(--sub);border-radius:4px;padding:3px 8px;cursor:pointer;font-size:10px;white-space:nowrap}
-.btn-sm:hover,.btn-sm.on{background:var(--accent);color:#fff;border-color:var(--accent)}
-.navlink{color:var(--sub);font-size:10px;text-decoration:none;margin-left:2px}.navlink:hover{color:var(--accent)}
-.ut{color:var(--sub);font-size:10px}
-input.stock{background:var(--panel2);border:1px solid var(--line);color:var(--text);border-radius:5px;padding:5px 8px;font-size:11px;width:90px;outline:none}
-input.stock:focus{border-color:var(--accent)}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.mt10{margin-top:10px}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden;display:flex;flex-direction:column}
-.ch{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-bottom:1px solid var(--line);flex-shrink:0}
-.ch h3{font-size:11px;font-weight:500}.ch .tag{font-size:9px;color:var(--sub)}
-.cb{flex:1;min-height:0}.cb.pad{padding:8px 12px}.cb.scrl{overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--line) transparent}
-.cb.scrl::-webkit-scrollbar{width:4px}.cb.scrl::-webkit-scrollbar-thumb{background:var(--line);border-radius:2px}
-.up{color:var(--red)}.down{color:var(--green)}
-.loading{text-align:center;color:var(--sub);padding:30px;font-size:11px}
-.loading::before{content:"";display:inline-block;width:10px;height:10px;border:2px solid var(--line);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin-right:6px;vertical-align:middle}
-@keyframes spin{to{transform:rotate(360deg)}}
-.err{text-align:center;color:var(--sub);padding:20px;font-size:10px}
-.fin-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:10px;padding:8px 10px}
-.fin-item{display:flex;justify-content:space-between;padding:3px 6px;background:var(--panel2);border-radius:3px}
-.fin-k{color:var(--sub)}.fin-v{font-weight:500}
-.f10-tabs{display:flex;gap:3px;padding:5px 10px;flex-wrap:wrap;border-bottom:1px solid var(--line)}
-.f10-content{padding:8px 12px;font-size:10px;line-height:1.6;white-space:pre-wrap;overflow-y:auto;max-height:360px}
-.rpt-tabs{display:flex;gap:3px;margin-bottom:6px}
-.rpt-wrap{overflow-x:auto;max-height:360px;overflow-y:auto}
-.rpt-wrap table{font-size:9px;border-collapse:collapse;min-width:600px}
-.rpt-wrap th{color:var(--sub);font-weight:500;text-align:right;padding:4px 6px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--panel)}
-.rpt-wrap .tl{text-align:left;min-width:80px}
-.rpt-wrap td{text-align:right;padding:3px 6px;border-bottom:1px solid var(--line);white-space:nowrap}
-.rpt-wrap tr:hover td{background:var(--panel2)}
-@media(max-width:1000px){.grid2{grid-template-columns:1fr}}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.mt10{margin-top:10px}
+  .card{background:#171c26;border:1px solid #2a3240;border-radius:8px;overflow:hidden;display:flex;flex-direction:column}
+  .ch{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-bottom:1px solid #2a3240;flex-shrink:0}
+  .ch h3{font-size:11px;font-weight:500}.ch .tag{font-size:9px;color:#8a94a6}
+  .cb{flex:1;min-height:0}.cb.pad{padding:8px 12px}.cb.scrl{overflow-y:auto;scrollbar-width:thin;scrollbar-color:#2a3240 transparent}
+  .cb.scrl::-webkit-scrollbar{width:4px}.cb.scrl::-webkit-scrollbar-thumb{background:#2a3240;border-radius:2px}
+  .btn-sm{background:#1e2531;border:1px solid #2a3240;color:#8a94a6;border-radius:4px;padding:3px 8px;cursor:pointer;font-size:10px;white-space:nowrap}
+  .btn-sm:hover,.btn-sm.on{background:#4c8dff;color:#fff;border-color:#4c8dff}
+  .fin-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:10px;padding:8px 10px}
+  .fin-item{display:flex;justify-content:space-between;padding:3px 6px;background:#1e2531;border-radius:3px}
+  .fin-k{color:#8a94a6}.fin-v{font-weight:500}
+  .f10-tabs{display:flex;gap:3px;padding:5px 10px;flex-wrap:wrap;border-bottom:1px solid #2a3240}
+  .f10-content{padding:8px 12px;font-size:10px;line-height:1.6;white-space:pre-wrap;overflow-y:auto;max-height:360px}
+  .rpt-tabs{display:flex;gap:3px;margin-bottom:6px}
+  .rpt-wrap{overflow-x:auto;max-height:360px;overflow-y:auto}
+  .rpt-wrap table{font-size:9px;border-collapse:collapse;min-width:600px}
+  .rpt-wrap th{color:#8a94a6;font-weight:500;text-align:right;padding:4px 6px;border-bottom:1px solid #2a3240;position:sticky;top:0;background:#171c26}
+  .rpt-wrap .tl{text-align:left;min-width:80px}
+  .rpt-wrap td{text-align:right;padding:3px 6px;border-bottom:1px solid #2a3240;white-space:nowrap}
+  .rpt-wrap tr:hover td{background:#1e2531}
+  @media(max-width:1000px){.grid2{grid-template-columns:1fr}}
 </style>
-</head>
-<body>
-<div class="wrap">
-<header>
-  <h1>基础数据层 · 基本面 <span class="dot">●</span></h1>
-  <div class="hr">
-    <span class="ut" id="tick">加载中...</span>
+{% endblock %}
+
+{% block content %}
+<div class="toolbar" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+  <h2 style="font-size:18px;font-weight:600">📊 基础数据层 · 基本面 <span style="color:#4c8dff">●</span></h2>
+  <div style="display:flex;align-items:center;gap:8px">
+    <span class="tick" id="tick">加载中...</span>
     <button class="btn" onclick="refreshAll()">刷新</button>
-    <input class="stock" id="stockCode" value="600519" placeholder="代码">
-    <button class="btn" onclick="refreshAll()">查询</button>
-    <a class="navlink" href="/">🏠</a><a class="navlink" href="/market">行情</a><a class="navlink" href="/research">研报</a><a class="navlink" href="/signals">信号</a><a class="navlink" href="/capital">资金</a><a class="navlink" href="/fundamentals" style="color:var(--gold)">基础</a><a class="navlink" href="/announcements">公告</a><a class="navlink" href="/factors">因子</a>
+    <input class="stock-code" id="stockCode" value="600519" placeholder="代码">
   </div>
-</header>
+</div>
 
-<!-- 财务快照 + F10 -->
 <div class="grid2">
-  <div class="card">
-    <div class="ch"><h3>季报快照 (mootdx)</h3><span class="tag" id="finTag">37字段</span></div>
-    <div class="cb scrl" id="finBox" style="max-height:500px"><div class="loading">加载中</div></div>
-  </div>
-  <div class="card">
-    <div class="ch"><h3 id="f10Title">F10 · 最新提示</h3></div>
-    <div class="f10-tabs" id="f10Tabs"></div>
-    <div class="f10-content" id="f10Box"><div class="loading">加载中</div></div>
-  </div>
+  <div class="card"><div class="ch"><h3>季报快照 (mootdx)</h3><span class="tag" id="finTag">37字段</span></div><div class="cb scrl" id="finBox" style="max-height:500px"><div class="loading">加载中</div></div></div>
+  <div class="card"><div class="ch"><h3 id="f10Title">F10 · 最新提示</h3></div><div class="f10-tabs" id="f10Tabs"></div><div class="f10-content" id="f10Box"><div class="loading">加载中</div></div></div>
 </div>
+<div class="card mt10"><div class="ch"><h3>财报三表 (新浪)</h3><span class="tag" id="rptTag"></span></div><div class="cb pad"><div class="rpt-tabs" id="rptTabs"><button class="btn-sm on" data-rpt="lrb">利润表</button><button class="btn-sm" data-rpt="fzb">资产负债表</button><button class="btn-sm" data-rpt="llb">现金流量表</button></div><div class="rpt-wrap" id="rptTable"><div class="loading">加载中</div></div></div></div>
+{% endblock %}
 
-<!-- 财报三表 -->
-<div class="card mt10">
-  <div class="ch"><h3>财报三表 (新浪)</h3><span class="tag" id="rptTag"></span></div>
-  <div class="cb pad">
-    <div class="rpt-tabs" id="rptTabs">
-      <button class="btn-sm on" data-rpt="lrb">利润表</button>
-      <button class="btn-sm" data-rpt="fzb">资产负债表</button>
-      <button class="btn-sm" data-rpt="llb">现金流量表</button>
-    </div>
-    <div class="rpt-wrap" id="rptTable"><div class="loading">加载中</div></div>
-  </div>
-</div>
-</div>
-
+{% block extra_js %}
 <script>
-const $=s=>document.getElementById(s);
-let curCode='600519',curRpt='lrb',loading=false;
-async function fj(u){const r=await fetch(u);return r.json()}
-
-// ── 字段名中英文映射 ──
-const FIN_LABELS={
-  zongguben:'总股本(股)',liutongguben:'流通股本(股)',farengu:'法人股(股)',
-  faqirenfarengu:'发起人法人股',guojiagu:'国家股',zhigonggu:'职工股',
-  meigujingzichan:'每股净资产',zhuyingshouru:'主营收入',zhuyinglirun:'主营利润',
-  yingyelirun:'营业利润',lirunzonghe:'利润总额',jinglirun:'净利润',
-  shuihoulirun:'税后利润',weifenpeilirun:'未分配利润',touzishouyu:'投资收益',
-  zongzichan:'总资产',jingzichan:'净资产',liudongzichan:'流动资产',
-  gudingzichan:'固定资产',wuxingzichan:'无形资产',cunhuo:'存货',
-  yingshouzhangkuan:'应收账款',liudongfuzhai:'流动负债',changqifuzhai:'长期负债',
-  zibengongjijin:'资本公积金',jingyingxianjinliu:'经营现金流',zongxianjinliu:'总现金流',
-  gudongrenshu:'股东人数',ipo_date:'上市日期',updated_date:'更新日期',
-  industry:'行业代码',market:'市场',province:'省份',code:'代码',
-};
-const UNIT_MAP={
-  zongzichan:'亿',jingzichan:'亿',liudongzichan:'亿',gudingzichan:'亿',
-  zhuyingshouru:'亿',zhuyinglirun:'亿',yingyelirun:'亿',lirunzonghe:'亿',
-  jinglirun:'亿',shuihoulirun:'亿',weifenpeilirun:'亿',touzishouyu:'万',
-  zongxianjinliu:'亿',jingyingxianjinliu:'亿',cunhuo:'亿',
-  yingshouzhangkuan:'亿',liudongfuzhai:'亿',changqifuzhai:'亿',wuxingzichan:'亿',
-};
-function fmtVal(k,v){
-  const n=parseFloat(v);if(isNaN(n))return v;
-  const unit=UNIT_MAP[k];
-  if(unit==='亿')return (n/1e8).toFixed(2)+'亿';
-  if(unit==='万')return (n/1e4).toFixed(0)+'万';
-  if(n>1e8)return (n/1e8).toFixed(2)+'亿';
-  if(n>1e4)return (n/1e4).toFixed(0)+'万';
-  if(n===parseInt(n))return n.toLocaleString();
-  return n.toFixed(2);
-}
-function finLabel(k){return FIN_LABELS[k]||k}
-
-const FIN_GROUPS=[
-  {name:'股本结构',keys:['zongguben','liutongguben','meigujingzichan','jingzichan','zibengongjijin','weifenpeilirun','gudongrenshu','ipo_date','updated_date']},
-  {name:'盈利能力',keys:['zhuyingshouru','zhuyinglirun','yingyelirun','lirunzonghe','jinglirun','shuihoulirun','touzishouyu']},
-  {name:'资产负债',keys:['zongzichan','liudongzichan','gudingzichan','wuxingzichan','cunhuo','yingshouzhangkuan','liudongfuzhai','changqifuzhai']},
-  {name:'现金流',keys:['jingyingxianjinliu','zongxianjinliu']},
-];
-
-// ── 财务快照 ──
-async function loadFinance(){
-  const b=$('finBox');
-  try{
-    const j=await fj('/api/fundamentals/finance?code='+curCode);
-    if(j.note==='mootdx_finance_empty'||j.error||!j.data){
-      b.innerHTML='<div class="err">mootdx TCP 盘后无数据<br><span style="font-size:9px">交易时段 9:30-15:00 可用</span></div>';return;
-    }
-    const f=j.data.fields||{};
-    let html='';
-    FIN_GROUPS.forEach(g=>{
-      const items=g.keys.filter(k=>f[k]&&f[k]!=='0.0'&&f[k]!=='nan');
-      if(!items.length)return;
-      html+='<div style="font-size:10px;font-weight:600;color:var(--accent);padding:8px 10px 4px">'+g.name+'</div>';
-      html+='<div class="fin-grid">'+items.map(k=>
-        '<div class="fin-item"><span class="fin-k">'+finLabel(k)+'</span><span class="fin-v">'+fmtVal(k,f[k])+'</span></div>'
-      ).join('')+'</div>';
-    });
-    const grouped=new Set(FIN_GROUPS.flatMap(g=>g.keys));
-    const rest=Object.keys(f).filter(k=>!grouped.has(k)&&f[k]&&f[k]!=='0.0'&&f[k]!=='nan');
-    if(rest.length){
-      html+='<div style="font-size:10px;font-weight:600;color:var(--accent);padding:8px 10px 4px">其他</div>';
-      html+='<div class="fin-grid">'+rest.map(k=>
-        '<div class="fin-item"><span class="fin-k">'+finLabel(k)+'</span><span class="fin-v">'+fmtVal(k,f[k])+'</span></div>'
-      ).join('')+'</div>';
-    }
-    const allKeys=Object.keys(f).filter(k=>f[k]&&f[k]!=='0.0'&&f[k]!=='nan');
-    $('finTag').textContent=allKeys.length+'项';
-    b.innerHTML=html||'<div class="err">无有效字段</div>';
-  }catch(e){b.innerHTML='<div class="err">'+e.message+'</div>'}
-}
-
-// ── F10 ──
-const F10_CATS=['最新提示','公司概况','财务分析','股东研究','股本结构','资本运作','业内点评','行业分析','公司大事'];
 (function(){
-  const tb=$('f10Tabs');
-  tb.innerHTML=F10_CATS.map((c,i)=>'<button class="btn-sm'+(i===0?' on':'')+'" data-cat="'+c+'">'+c+'</button>').join('');
-  tb.addEventListener('click',e=>{
-    if(!e.target.classList.contains('btn-sm'))return;
-    tb.querySelectorAll('.btn-sm').forEach(t=>t.classList.remove('on'));
-    e.target.classList.add('on');
-    loadF10(e.target.dataset.cat);
-  });
-})();
+const $=s=>document.getElementById(s);let curCode='600519',curRpt='lrb',loading=false;
+async function fj(u){const r=await fetch(u);return r.json()}
+const FIN_LABELS={zongguben:'总股本(股)',liutongguben:'流通股本(股)',meigujingzichan:'每股净资产',zhuyingshouru:'主营收入',zhuyinglirun:'主营利润',yingyelirun:'营业利润',lirunzonghe:'利润总额',jinglirun:'净利润',shuihoulirun:'税后利润',weifenpeilirun:'未分配利润',touzishouyu:'投资收益',zongzichan:'总资产',jingzichan:'净资产',liudongzichan:'流动资产',gudingzichan:'固定资产',wuxingzichan:'无形资产',cunhuo:'存货',yingshouzhangkuan:'应收账款',liudongfuzhai:'流动负债',changqifuzhai:'长期负债',zibengongjijin:'资本公积金',jingyingxianjinliu:'经营现金流',zongxianjinliu:'总现金流',gudongrenshu:'股东人数',ipo_date:'上市日期',updated_date:'更新日期',industry:'行业代码',market:'市场',province:'省份',code:'代码'};
+const UNIT_MAP={zongzichan:'亿',jingzichan:'亿',liudongzichan:'亿',gudingzichan:'亿',zhuyingshouru:'亿',zhuyinglirun:'亿',yingyelirun:'亿',lirunzonghe:'亿',jinglirun:'亿',shuihoulirun:'亿',weifenpeilirun:'亿',touzishouyu:'万',zongxianjinliu:'亿',jingyingxianjinliu:'亿',cunhuo:'亿',yingshouzhangkuan:'亿',liudongfuzhai:'亿',changqifuzhai:'亿',wuxingzichan:'亿'};
+function fmtVal(k,v){const n=parseFloat(v);if(isNaN(n))return v;const unit=UNIT_MAP[k];if(unit==='亿')return (n/1e8).toFixed(2)+'亿';if(unit==='万')return (n/1e4).toFixed(0)+'万';if(n>1e8)return (n/1e8).toFixed(2)+'亿';if(n>1e4)return (n/1e4).toFixed(0)+'万';if(n===parseInt(n))return n.toLocaleString();return n.toFixed(2)}
+function fl(k){return FIN_LABELS[k]||k}
+const FIN_GROUPS=[{name:'股本结构',keys:['zongguben','liutongguben','meigujingzichan','jingzichan','zibengongjijin','weifenpeilirun','gudongrenshu','ipo_date','updated_date']},{name:'盈利能力',keys:['zhuyingshouru','zhuyinglirun','yingyelirun','lirunzonghe','jinglirun','shuihoulirun','touzishouyu']},{name:'资产负债',keys:['zongzichan','liudongzichan','gudingzichan','wuxingzichan','cunhuo','yingshouzhangkuan','liudongfuzhai','changqifuzhai']},{name:'现金流',keys:['jingyingxianjinliu','zongxianjinliu']}];
 
-function formatF10(text,cat){
-  if(!text)return '<div class="err">(空)</div>';
-  let t=text.replace(/\\r\\n/g,'\n').replace(/\r\n/g,'\n').replace(/\r/g,'\n');
-  t=t.replace(/��/g,'|');
-  t=t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  return '<pre style="font-size:10px;line-height:1.6;white-space:pre-wrap;word-break:break-all;color:var(--text);margin:0">'+t+'</pre>';
-}
+async function loadFinance(){const b=$('finBox');try{const j=await fj('/api/fundamentals/finance?code='+curCode);if(j.note==='mootdx_finance_empty'||j.error||!j.data){b.innerHTML='<div class="err">mootdx TCP 盘后无数据<br><span style="font-size:9px">交易时段 9:30-15:00 可用</span></div>';return}const f=j.data.fields||{};let html='';FIN_GROUPS.forEach(g=>{const items=g.keys.filter(k=>f[k]&&f[k]!=='0.0'&&f[k]!=='nan');if(!items.length)return;html+='<div style="font-size:10px;font-weight:600;color:#4c8dff;padding:8px 10px 4px">'+g.name+'</div>';html+='<div class="fin-grid">'+items.map(k=>'<div class="fin-item"><span class="fin-k">'+fl(k)+'</span><span class="fin-v">'+fmtVal(k,f[k])+'</span></div>').join('')+'</div>'});const grouped=new Set(FIN_GROUPS.flatMap(g=>g.keys));const rest=Object.keys(f).filter(k=>!grouped.has(k)&&f[k]&&f[k]!=='0.0'&&f[k]!=='nan');if(rest.length){html+='<div style="font-size:10px;font-weight:600;color:#4c8dff;padding:8px 10px 4px">其他</div>';html+='<div class="fin-grid">'+rest.map(k=>'<div class="fin-item"><span class="fin-k">'+fl(k)+'</span><span class="fin-v">'+fmtVal(k,f[k])+'</span></div>').join('')+'</div>'}const ak=Object.keys(f).filter(k=>f[k]&&f[k]!=='0.0'&&f[k]!=='nan');$('finTag').textContent=ak.length+'项';b.innerHTML=html||'<div class="err">无有效字段</div>'}catch(e){b.innerHTML='<div class="err">'+e.message+'</div>'}}
 
-async function loadF10(cat){
-  if(!cat)cat=$('f10Tabs').querySelector('.on')?.dataset.cat||'最新提示';
-  $('f10Title').textContent='F10 · '+cat;
-  const b=$('f10Box');b.innerHTML='<div class="loading">加载中</div>';
-  try{
-    const j=await fj('/api/fundamentals/f10?code='+curCode+'&cat='+encodeURIComponent(cat));
-    if(j.error||!j.data||!j.data.text){b.innerHTML='<div class="err">mootdx TCP 盘后无数据</div>';return}
-    b.innerHTML=formatF10(j.data.text,cat);
-  }catch(e){b.innerHTML='<div class="err">'+e.message+'</div>'}
-}
+const F10_CATS=['最新提示','公司概况','财务分析','股东研究','股本结构','资本运作','业内点评','行业分析','公司大事'];
+(function(){const tb=$('f10Tabs');tb.innerHTML=F10_CATS.map((c,i)=>'<button class="btn-sm'+(i===0?' on':'')+'" data-cat="'+c+'">'+c+'</button>').join('');tb.addEventListener('click',e=>{if(!e.target.classList.contains('btn-sm'))return;tb.querySelectorAll('.btn-sm').forEach(t=>t.classList.remove('on'));e.target.classList.add('on');loadF10(e.target.dataset.cat)})})();
 
-// ── 财报三表 ──
-document.getElementById('rptTabs').addEventListener('click',e=>{
-  if(!e.target.classList.contains('btn-sm'))return;
-  document.querySelectorAll('#rptTabs .btn-sm').forEach(t=>t.classList.remove('on'));
-  e.target.classList.add('on');
-  loadReport(e.target.dataset.rpt);
-});
+function fmtF10(text){if(!text)return '<div class="err">(空)</div>';let t=text.replace(/\\r\\n/g,'\n').replace(/\r\n/g,'\n').replace(/\r/g,'\n');t=t.replace(/��/g,'|');t=t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');return '<pre style="font-size:10px;line-height:1.6;white-space:pre-wrap;word-break:break-all;color:#e6ebf2;margin:0">'+t+'</pre>'}
 
-async function loadReport(rpt){
-  if(rpt)curRpt=rpt;
-  const b=$('rptTable');b.innerHTML='<div class="loading">加载中</div>';
-  try{
-    const j=await fj('/api/fundamentals/fin_report?code='+curCode+'&type='+curRpt);
-    if(j.error||!j.data){b.innerHTML='<div class="err">暂无财报</div>';return}
-    const reps=j.data.reports||[];
-    if(!reps.length){b.innerHTML='<div class="err">无数据</div>';return}
-    $('rptTag').textContent=reps.length+'期';
-    const keys=[];const seen=new Set();
-    reps.forEach(r=>Object.keys(r).forEach(k=>{if(!seen.has(k)&&k!=='报告期'){seen.add(k);keys.push(k)}}));
-    const showKeys=keys.slice(0,15);
-    let html='<table><thead><tr><th class="tl">科目</th>'+reps.map(r=>'<th>'+r['报告期']+'</th>').join('')+'</tr></thead><tbody>';
-    showKeys.forEach(k=>{
-      html+='<tr><td class="tl">'+k+'</td>'+reps.map(r=>'<td>'+(r[k]||'-')+'</td>').join('')+'</tr>';
-    });
-    if(keys.length>15)html+='<tr><td class="tl" style="color:var(--sub)">...共'+keys.length+'个科目</td></tr>';
-    html+='</tbody></table>';b.innerHTML=html;
-  }catch(e){b.innerHTML='<div class="err">'+e.message+'</div>'}
-}
+async function loadF10(cat){if(!cat)cat=$('f10Tabs').querySelector('.on')?.dataset.cat||'最新提示';$('f10Title').textContent='F10 · '+cat;const b=$('f10Box');b.innerHTML='<div class="loading">加载中</div>';try{const j=await fj('/api/fundamentals/f10?code='+curCode+'&cat='+encodeURIComponent(cat));if(j.error||!j.data||!j.data.text){b.innerHTML='<div class="err">mootdx TCP 盘后无数据</div>';return}b.innerHTML=fmtF10(j.data.text)}catch(e){b.innerHTML='<div class="err">'+e.message+'</div>'}}
 
-// ── 刷新 ──
-async function refreshAll(){
-  if(loading)return;loading=true;
-  curCode=$('stockCode').value.trim()||'600519';
-  if(!curCode.match(/^\d{6}/)){curCode='600519';$('stockCode').value='600519';}
-  $('tick').textContent='查询 '+curCode+'...';
-  await Promise.allSettled([loadFinance(),loadF10(),loadReport()]);
-  $('tick').textContent=curCode+' 已更新 '+new Date().toLocaleTimeString();
-  loading=false;
-}
+document.getElementById('rptTabs').addEventListener('click',e=>{if(!e.target.classList.contains('btn-sm'))return;document.querySelectorAll('#rptTabs .btn-sm').forEach(t=>t.classList.remove('on'));e.target.classList.add('on');loadReport(e.target.dataset.rpt)});
 
+async function loadReport(rpt){if(rpt)curRpt=rpt;const b=$('rptTable');b.innerHTML='<div class="loading">加载中</div>';try{const j=await fj('/api/fundamentals/fin_report?code='+curCode+'&type='+curRpt);if(j.error||!j.data){b.innerHTML='<div class="err">暂无财报</div>';return}const reps=j.data.reports||[];if(!reps.length){b.innerHTML='<div class="err">无数据</div>';return}$('rptTag').textContent=reps.length+'期';const keys=[],seen=new Set();reps.forEach(r=>Object.keys(r).forEach(k=>{if(!seen.has(k)&&k!=='报告期'){seen.add(k);keys.push(k)}}));const sk=keys.slice(0,15);let html='<table><thead><tr><th class="tl">科目</th>'+reps.map(r=>'<th>'+r['报告期']+'</th>').join('')+'</tr></thead><tbody>';sk.forEach(k=>{html+='<tr><td class="tl">'+k+'</td>'+reps.map(r=>'<td>'+(r[k]||'-')+'</td>').join('')+'</tr>'});if(keys.length>15)html+='<tr><td class="tl" style="color:#8a94a6">...共'+keys.length+'个科目</td></tr>';html+='</tbody></table>';b.innerHTML=html}catch(e){b.innerHTML='<div class="err">'+e.message+'</div>'}}
+
+async function refreshAll(){if(loading)return;loading=true;curCode=$('stockCode').value.trim()||'600519';if(!curCode.match(/^\d{6}/)){curCode='600519';$('stockCode').value='600519'}$('tick').textContent='查询 '+curCode+'...';await Promise.allSettled([loadFinance(),loadF10(),loadReport()]);$('tick').textContent=curCode+' 已更新 '+new Date().toLocaleTimeString();loading=false}
 $('stockCode').addEventListener('keydown',e=>{if(e.key==='Enter')refreshAll()});
-
-(function init(){
-  const params=new URLSearchParams(window.location.search);
-  const c=params.get('code');
-  if(c&&c.match(/^\d{6}/)){
-    curCode=c;$('stockCode').value=c;
-    document.title=c+' - 基础数据';
-  }
-  refreshAll();
+(function init(){const p=new URLSearchParams(window.location.search);const c=p.get('code');if(c&&c.match(/^\d{6}/)){curCode=c;$('stockCode').value=c;document.title=c+' - 基础数据'}refreshAll()})();
 })();
 </script>
-</body>
-</html>
+{% endblock %}

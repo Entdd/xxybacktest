@@ -1,113 +1,58 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>公告层 · 公告资讯</title>
-<style>
-  :root{--bg:#0f1218;--panel:#171c26;--panel2:#1e2531;--line:#2a3240;--text:#e6ebf2;--sub:#8a94a6;--accent:#4c8dff;--green:#26c281;--red:#ff5d5d;--gold:#f5d547}
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{background:var(--bg);color:var(--text);font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;font-size:14px}
-  .wrap{max-width:1520px;margin:0 auto;padding:16px}
-  header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:8px}
-  h1{font-size:19px;font-weight:600}h1 .dot{color:var(--accent)}
-  .hr{display:flex;align-items:center;gap:8px}.btn{background:var(--accent);color:#fff;border:none;border-radius:6px;padding:6px 14px;cursor:pointer;font-size:12px}.btn:hover{opacity:.9}
-  .navlink{color:var(--sub);font-size:11px;text-decoration:none;margin-left:4px}.navlink:hover{color:var(--accent)}
-  .ut{color:var(--sub);font-size:11px}
-  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}.mt12{margin-top:12px}
-  .card{background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden}
-  .ch{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line)}
-  .ch h3{font-size:12px;font-weight:500}.ch .tag{font-size:10px;color:var(--sub)}
-  .cb{flex:1}.cb.pad{padding:10px 14px}.cb.scrl{overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--line) transparent;padding:8px 14px}
-  .cb.scrl::-webkit-scrollbar{width:4px}.cb.scrl::-webkit-scrollbar-thumb{background:var(--line);border-radius:2px}
-  .loading{text-align:center;color:var(--sub);padding:30px;font-size:12px}
-  .loading::before{content:"";display:inline-block;width:12px;height:12px;border:2px solid var(--line);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin-right:6px;vertical-align:middle}
-  @keyframes spin{to{transform:rotate(360deg)}}
-  .err{text-align:center;color:var(--sub);padding:20px;font-size:11px}
-  .up{color:var(--red)}.down{color:var(--green)}
+{% extends "base.html" %}
+{% block title %}公告层 · 公告资讯{% endblock %}
+{% block body_class %}dark{% endblock %}
 
-  .news-item{padding:8px 0;border-bottom:1px solid var(--line);font-size:11px;line-height:1.5}.news-item:last-child{border-bottom:none}
-  .news-time{color:var(--sub);font-size:10px;margin-right:6px}.news-title{font-weight:500}
-  .ann-item{padding:8px 0;border-bottom:1px solid var(--line);font-size:11px;line-height:1.4}.ann-item:last-child{border-bottom:none}
-  .ann-date{color:var(--sub);font-size:10px}.ann-name{font-weight:600;color:var(--text)}.ann-type{background:var(--panel2);padding:1px 6px;border-radius:3px;font-size:9px;color:var(--accent);margin-left:6px}
-  .cls-item{padding:6px 0;border-bottom:1px solid var(--line);font-size:11px;line-height:1.5}.cls-item:last-child{border-bottom:none}
-  .cls-time{color:var(--gold);font-size:10px;font-weight:500;margin-right:6px}
-  @media(max-width:1000px){.grid2,.grid3{grid-template-columns:1fr}}
+{% block extra_css %}
+<style>
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.mt12{margin-top:12px}
+  .card{background:#171c26;border:1px solid #2a3240;border-radius:8px;overflow:hidden}
+  .ch{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid #2a3240}
+  .ch h3{font-size:12px;font-weight:500}.ch .tag{font-size:10px;color:#8a94a6}
+  .cb{flex:1}.cb.pad{padding:10px 14px}.cb.scrl{overflow-y:auto;scrollbar-width:thin;scrollbar-color:#2a3240 transparent;padding:8px 14px}
+  .cb.scrl::-webkit-scrollbar{width:4px}.cb.scrl::-webkit-scrollbar-thumb{background:#2a3240;border-radius:2px}
+  .news-item{padding:8px 0;border-bottom:1px solid #2a3240;font-size:11px;line-height:1.5}.news-item:last-child{border-bottom:none}
+  .news-time{color:#8a94a6;font-size:10px;margin-right:6px}.news-title{font-weight:500}
+  .ann-item{padding:8px 0;border-bottom:1px solid #2a3240;font-size:11px;line-height:1.4}.ann-item:last-child{border-bottom:none}
+  .ann-date{color:#8a94a6;font-size:10px}.ann-name{font-weight:600}.ann-type{background:#1e2531;padding:1px 6px;border-radius:3px;font-size:9px;color:#4c8dff;margin-left:6px}
+  .cls-item{padding:6px 0;border-bottom:1px solid #2a3240;font-size:11px;line-height:1.5}.cls-item:last-child{border-bottom:none}
+  .cls-time{color:#f5d547;font-size:10px;font-weight:500;margin-right:6px}
+  @media(max-width:1000px){.grid2{grid-template-columns:1fr}}
 </style>
-</head>
-<body>
-<div class="wrap">
-<header>
-  <h1>公告资讯 <span class="dot">●</span></h1>
-  <div class="hr">
-    <span class="ut" id="tick">加载中...</span>
+{% endblock %}
+
+{% block content %}
+<div class="toolbar" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+  <h2 style="font-size:18px;font-weight:600">📢 公告层 · 公告资讯 <span style="color:#4c8dff">●</span></h2>
+  <div style="display:flex;align-items:center;gap:8px">
+    <span class="tick" id="tick">加载中...</span>
     <button class="btn" onclick="refreshAll()">刷新全部</button>
-    <input id="stockCode" style="background:var(--panel2);border:1px solid var(--line);color:var(--text);border-radius:5px;padding:5px 10px;font-size:12px;width:80px" placeholder="000001" value="000001">
-    <a class="navlink" href="/">🏠</a><a class="navlink" href="/market">行情</a><a class="navlink" href="/research">研报</a><a class="navlink" href="/signals">信号</a><a class="navlink" href="/capital">资金</a><a class="navlink" href="/fundamentals">基础</a><a class="navlink" href="/announcements" style="color:var(--gold)">公告</a><a class="navlink" href="/factors">因子</a>
+    <input class="stock-code" id="stockCode" value="000001" placeholder="代码">
   </div>
-</header>
+</div>
 
 <div class="grid2">
   <div class="card"><div class="ch"><h3>巨潮全量公告</h3><span class="tag" id="annTag"></span></div><div class="cb scrl" id="annBox" style="max-height:500px"><div class="loading">加载中</div></div></div>
   <div class="card"><div class="ch"><h3>财联社 7×24 快讯</h3><span class="tag" id="clsTag"></span></div><div class="cb scrl" id="clsBox" style="max-height:500px"><div class="loading">加载中</div></div></div>
 </div>
-
 <div class="grid2 mt12">
   <div class="card"><div class="ch"><h3>个股新闻</h3><span class="tag" id="snTag"></span></div><div class="cb scrl" id="snBox" style="max-height:400px"><div class="loading">加载中</div></div></div>
   <div class="card"><div class="ch"><h3>全球宏观资讯</h3><span class="tag" id="gnTag"></span></div><div class="cb scrl" id="gnBox" style="max-height:400px"><div class="loading">加载中</div></div></div>
 </div>
-</div>
+{% endblock %}
 
+{% block extra_js %}
 <script>
+(function(){
 const $=s=>document.getElementById(s);let curCode=$('stockCode').value;
+(function init(){const p=new URLSearchParams(window.location.search);const c=p.get('code');if(c&&c.match(/^\d{6}/)){curCode=c;$('stockCode').value=c;document.title=c+' - 公告资讯'}refreshAll()})();
 
-(function init(){
-  const p=new URLSearchParams(window.location.search);const c=p.get('code');
-  if(c&&c.match(/^\d{6}/)){curCode=c;$('stockCode').value=c;document.title=c+' - 公告资讯'}
-  refreshAll();
+function refreshAll(){$('tick').textContent='加载中...';Promise.allSettled([loadAnn(),loadCls(),loadNews()]).then(()=>$('tick').textContent=new Date().toLocaleTimeString())}
+
+async function loadAnn(){const b=$('annBox'),t=$('annTag');b.innerHTML='<div class="loading">加载中</div>';try{const r=await fetch('/api/announcements/cninfo?code='+curCode);const d=await r.json();if(!d.data||!d.data.announcements||!d.data.announcements.length){b.innerHTML='<div class="err">暂无公告</div>';t.textContent='0条';return}const anns=d.data.announcements;t.textContent=anns.length+'条';b.innerHTML=anns.map(a=>'<div class="ann-item"><div><span class="ann-date">'+(a.date||a.announce_date||'')+'</span><span class="ann-type">'+(a.type||a.announce_type||'')+'</span></div><div class="ann-name">'+(a.name||a.title||'')+'</div></div>').join('')}catch(e){b.innerHTML='<div class="err">加载失败</div>'}}
+
+async function loadCls(){const b=$('clsBox'),t=$('clsTag');b.innerHTML='<div class="loading">加载中</div>';try{const r=await fetch('/api/announcements/telegraph');const d=await r.json();if(!d.data||!d.data.length){b.innerHTML='<div class="err">暂无快讯</div>';t.textContent='0条';return}t.textContent=d.data.length+'条';b.innerHTML=d.data.map(n=>'<div class="cls-item"><span class="cls-time">'+(n.time||'')+'</span><span>'+(n.content||n.title||'')+'</span></div>').join('')}catch(e){b.innerHTML='<div class="err">加载失败</div>'}}
+
+async function loadNews(){const sb=$('snBox'),st=$('snTag'),gb=$('gnBox'),gt=$('gnTag');sb.innerHTML='<div class="loading">加载中</div>';gb.innerHTML='<div class="loading">加载中</div>';try{const r=await fetch('/api/announcements/stock_news?code='+curCode);const d=await r.json();if(!d.data){sb.innerHTML='<div class="err">暂无</div>';gb.innerHTML='<div class="err">暂无</div>';return}const sn=d.data.stock_news||[],gn=d.data.global_news||[];st.textContent=sn.length+'条';gt.textContent=gn.length+'条';sb.innerHTML=sn.length?sn.map(n=>'<div class="news-item"><span class="news-time">'+(n.time||'')+'</span><span class="news-title">'+(n.title||'')+'</span></div>').join(''):'<div class="err">暂无个股新闻</div>';gb.innerHTML=gn.length?gn.map(n=>'<div class="news-item"><span class="news-time">'+(n.time||'')+'</span><span class="news-title">'+(n.title||'')+'</span></div>').join(''):'<div class="err">暂无全球资讯</div>'}catch(e){sb.innerHTML='<div class="err">加载失败</div>';gb.innerHTML='<div class="err">加载失败</div>'}}
 })();
-
-function refreshAll(){
-  $('tick').textContent='加载中...';
-  Promise.allSettled([loadAnnouncements(),loadTelegraph(),loadStockNews()]).then(()=>$('tick').textContent=new Date().toLocaleTimeString());
-}
-
-async function loadAnnouncements(){
-  const box=$('annBox'),tag=$('annTag');
-  box.innerHTML='<div class="loading">加载中</div>';
-  try{
-    const r=await fetch(`/api/announcements/cninfo?code=${curCode}`);const d=await r.json();
-    if(!d.data||!d.data.announcements||d.data.announcements.length===0){box.innerHTML='<div class="err">暂无公告</div>';tag.textContent='0条';return}
-    const anns=d.data.announcements;tag.textContent=anns.length+'条';
-    box.innerHTML=anns.map(a=>`<div class="ann-item">
-      <div><span class="ann-date">${a.date||a.announce_date||''}</span><span class="ann-type">${a.type||a.announce_type||''}</span></div>
-      <div class="ann-name">${a.name||a.title||''}</div>
-    </div>`).join('');
-  }catch(e){box.innerHTML=`<div class="err">加载失败: ${e.message}</div>`}
-}
-
-async function loadTelegraph(){
-  const box=$('clsBox'),tag=$('clsTag');
-  box.innerHTML='<div class="loading">加载中</div>';
-  try{
-    const r=await fetch('/api/announcements/telegraph');const d=await r.json();
-    if(!d.data||d.data.length===0){box.innerHTML='<div class="err">暂无快讯</div>';tag.textContent='0条';return}
-    tag.textContent=d.data.length+'条';
-    box.innerHTML=d.data.map(n=>`<div class="cls-item"><span class="cls-time">${n.time||''}</span><span>${n.content||n.title||''}</span></div>`).join('');
-  }catch(e){box.innerHTML=`<div class="err">加载失败: ${e.message}</div>`}
-}
-
-async function loadStockNews(){
-  const snBox=$('snBox'),snTag=$('snTag'),gnBox=$('gnBox'),gnTag=$('gnTag');
-  snBox.innerHTML='<div class="loading">加载中</div>';gnBox.innerHTML='<div class="loading">加载中</div>';
-  try{
-    const r=await fetch(`/api/announcements/stock_news?code=${curCode}`);const d=await r.json();
-    if(!d.data){snBox.innerHTML='<div class="err">暂无数据</div>';gnBox.innerHTML='<div class="err">暂无数据</div>';return}
-    const sn=d.data.stock_news||[];const gn=d.data.global_news||[];
-    snTag.textContent=sn.length+'条';gnTag.textContent=gn.length+'条';
-    snBox.innerHTML=sn.length?sn.map(n=>`<div class="news-item"><span class="news-time">${n.time||''}</span><span class="news-title">${n.title||''}</span></div>`).join(''):'<div class="err">暂无个股新闻</div>';
-    gnBox.innerHTML=gn.length?gn.map(n=>`<div class="news-item"><span class="news-time">${n.time||''}</span><span class="news-title">${n.title||''}</span></div>`).join(''):'<div class="err">暂无全球资讯</div>';
-  }catch(e){snBox.innerHTML=`<div class="err">加载失败</div>`;gnBox.innerHTML=`<div class="err">加载失败</div>`}
-}
 </script>
-</body>
-</html>
+{% endblock %}

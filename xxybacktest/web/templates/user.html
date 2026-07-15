@@ -1,110 +1,67 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>用户层 · 账户管理</title>
+{% extends "base.html" %}
+{% block title %}用户层 · 账户管理{% endblock %}
+{% block body_class %}dark{% endblock %}
+
+{% block extra_css %}
 <style>
-  :root{--bg:#0f1218;--panel:#171c26;--panel2:#1e2531;--line:#2a3240;--text:#e6ebf2;--sub:#8a94a6;--accent:#4c8dff;--green:#26c281;--red:#ff5d5d;--gold:#f5d547}
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{background:var(--bg);color:var(--text);font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;font-size:14px}
-  .wrap{max-width:1520px;margin:0 auto;padding:16px}
-  header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:8px}
-  h1{font-size:19px;font-weight:600}h1 .dot{color:var(--accent)}
-  .hr{display:flex;align-items:center;gap:8px}.btn{background:var(--accent);color:#fff;border:none;border-radius:6px;padding:6px 14px;cursor:pointer;font-size:12px}.btn:hover{opacity:.9}
-  .navlink{color:var(--sub);font-size:11px;text-decoration:none;margin-left:4px}.navlink:hover{color:var(--accent)}
-  .ut{color:var(--sub);font-size:11px}
   .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.mt12{margin-top:12px}
-  .card{background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden}
-  .ch{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line)}
-  .ch h3{font-size:12px;font-weight:500}.ch .tag{font-size:10px;color:var(--sub)}
-  .cb{flex:1}.cb.pad{padding:10px 14px}.cb.scrl{overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--line) transparent;padding:8px 14px}
-  .cb.scrl::-webkit-scrollbar{width:4px}.cb.scrl::-webkit-scrollbar-thumb{background:var(--line);border-radius:2px}
-  .loading{text-align:center;color:var(--sub);padding:30px;font-size:12px}
-  .loading::before{content:"";display:inline-block;width:12px;height:12px;border:2px solid var(--line);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin-right:6px;vertical-align:middle}
-  @keyframes spin{to{transform:rotate(360deg)}}
-  .err{text-align:center;color:var(--sub);padding:20px;font-size:11px}
-  .stat-card{background:var(--panel2);border-radius:6px;padding:16px;text-align:center}
-  .stat-val{font-size:32px;font-weight:700;color:var(--accent)}.stat-label{font-size:11px;color:var(--sub);margin-top:4px}
-  .acc-row{display:flex;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line);gap:10px;font-size:12px}.acc-row:last-child{border-bottom:none}
-  .acc-name{font-weight:600;flex:1}.acc-status{font-size:10px;padding:2px 8px;border-radius:4px}.acc-running{background:#26c28122;color:var(--green)}.acc-paused{background:#ff5d5d22;color:var(--red)}
-  .acc-link{color:var(--accent);text-decoration:none;font-size:11px}.acc-link:hover{text-decoration:underline}
-  .up{color:var(--red)}.down{color:var(--green)}
-  @media(max-width:1000px){.grid3{grid-template-columns:1fr}}
+  .card{background:#171c26;border:1px solid #2a3240;border-radius:8px;overflow:hidden}
+  .ch{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid #2a3240}
+  .ch h3{font-size:12px;font-weight:500}.ch .tag{font-size:10px;color:#8a94a6}
+  .cb{flex:1}.cb.pad{padding:10px 14px}.cb.scrl{overflow-y:auto;scrollbar-width:thin;scrollbar-color:#2a3240 transparent;padding:8px 14px}
+  .cb.scrl::-webkit-scrollbar{width:4px}.cb.scrl::-webkit-scrollbar-thumb{background:#2a3240;border-radius:2px}
+  .stat-card{background:#1e2531;border-radius:6px;padding:16px;text-align:center}
+  .stat-val{font-size:32px;font-weight:700;color:#4c8dff}.stat-label{font-size:11px;color:#8a94a6;margin-top:4px}
+  .acc-row{display:flex;align-items:center;padding:10px 14px;border-bottom:1px solid #2a3240;gap:10px;font-size:12px}.acc-row:last-child{border-bottom:none}
+  .acc-name{font-weight:600;flex:1}.acc-running{background:#26c28122;color:#26c281;font-size:10px;padding:2px 8px;border-radius:4px}
+  .acc-paused{background:#ff5d5d22;color:#ff5d5d;font-size:10px;padding:2px 8px;border-radius:4px}
+  .acc-link{color:#4c8dff;text-decoration:none;font-size:11px}.acc-link:hover{text-decoration:underline}
+  @media(max-width:1000px){.grid3,.grid2{grid-template-columns:1fr}}
 </style>
-</head>
-<body>
-<div class="wrap">
-<header>
-  <h1>用户管理 <span class="dot">●</span></h1>
-  <div class="hr">
-    <span class="ut" id="tick">加载中...</span>
+{% endblock %}
+
+{% block content %}
+<div class="toolbar" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+  <h2 style="font-size:18px;font-weight:600">👤 用户层 · 账户管理 <span style="color:#4c8dff">●</span></h2>
+  <div style="display:flex;align-items:center;gap:8px">
+    <span class="tick" id="tick">加载中...</span>
     <button class="btn" onclick="refreshAll()">刷新</button>
-    <a class="navlink" href="/">🏠</a><a class="navlink" href="/market">行情</a><a class="navlink" href="/research">研报</a><a class="navlink" href="/signals">信号</a><a class="navlink" href="/capital">资金</a><a class="navlink" href="/fundamentals">基础</a><a class="navlink" href="/announcements">公告</a><a class="navlink" href="/factors">因子</a><a class="navlink" href="/user" style="color:var(--gold)">用户</a>
   </div>
-</header>
+</div>
 
 <div class="grid3" id="statsBox">
   <div class="stat-card"><div class="stat-val" id="sTotal">-</div><div class="stat-label">总账户数</div></div>
-  <div class="stat-card"><div class="stat-val" id="sRunning" style="color:var(--green)">-</div><div class="stat-label">运行中</div></div>
-  <div class="stat-card"><div class="stat-val" id="sLive" style="color:var(--gold)">-</div><div class="stat-label">实盘账户</div></div>
+  <div class="stat-card"><div class="stat-val" id="sRunning" style="color:#26c281">-</div><div class="stat-label">运行中</div></div>
+  <div class="stat-card"><div class="stat-val" id="sLive" style="color:#f5d547">-</div><div class="stat-label">实盘账户</div></div>
 </div>
 
-<div class="card mt12"><div class="ch"><h3>所有账户</h3><span class="tag" id="accTag"></span></div>
-  <div class="cb scrl" id="accBox" style="max-height:500px"><div class="loading">加载中</div></div>
-</div>
+<div class="card mt12"><div class="ch"><h3>所有账户</h3><span class="tag" id="accTag"></span></div><div class="cb scrl" id="accBox" style="max-height:460px"><div class="loading">加载中</div></div></div>
 
 <div class="grid2 mt12">
-  <div class="card"><div class="ch"><h3>快速操作</h3></div>
-    <div class="cb pad">
-      <div style="display:flex;flex-direction:column;gap:8px">
-        <button class="btn" onclick="location.href='/'" style="width:100%">📊 查看账户看板</button>
-        <button class="btn" onclick="location.href='/factors'" style="width:100%;background:var(--panel2);border:1px solid var(--accent)">📈 因子分析</button>
-        <button class="btn" onclick="location.href='/tasks'" style="width:100%;background:var(--panel2);border:1px solid var(--accent)">⏱ 任务管理</button>
-      </div>
+  <div class="card"><div class="ch"><h3>快速操作</h3></div><div class="cb pad">
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <button class="btn" onclick="location.href='/'" style="width:100%">📊 查看账户看板</button>
+      <button class="btn" onclick="location.href='/factors'" style="width:100%;background:#1e2531;border:1px solid #4c8dff">📈 因子分析</button>
+      <button class="btn" onclick="location.href='/tasks'" style="width:100%;background:#1e2531;border:1px solid #4c8dff">⏱ 任务管理</button>
     </div>
-  </div>
-  <div class="card"><div class="ch"><h3>系统信息</h3></div>
-    <div class="cb pad">
-      <div style="font-size:12px;line-height:2;color:var(--sub)">
-        <div>数据路径: <span style="color:var(--text)">./data</span></div>
-        <div>数据源: <span style="color:var(--text)">xxydb (DuckDB)</span></div>
-        <div>Agent: <span style="color:var(--text)">9层架构</span></div>
-        <div style="margin-top:8px;color:var(--text)">行情 · 研报 · 信号 · 资金 · 基础 · 公告 · 因子 · 用户 · 任务</div>
-      </div>
+  </div></div>
+  <div class="card"><div class="ch"><h3>系统信息</h3></div><div class="cb pad">
+    <div style="font-size:12px;line-height:2;color:#8a94a6">
+      <div>数据路径: <span style="color:#e6ebf2">./data</span></div>
+      <div>数据源: <span style="color:#e6ebf2">xxydb (DuckDB)</span></div>
+      <div>架构: <span style="color:#e6ebf2">9层 Agent + Blueprint</span></div>
+      <div style="margin-top:8px;color:#e6ebf2;font-size:10px">行情 · 研报 · 信号 · 资金 · 基础 · 公告 · 因子 · 用户 · 任务</div>
     </div>
-  </div>
+  </div></div>
 </div>
-</div>
+{% endblock %}
 
+{% block extra_js %}
 <script>
+(function(){
 const $=s=>document.getElementById(s);
-
-(function init(){refreshAll();})();
-
-async function refreshAll(){
-  $('tick').textContent='加载中...';
-  try{
-    const r=await fetch('/api/user/overview');const d=await r.json();
-    if(!d.data){return}
-    const u=d.data;
-    $('sTotal').textContent=u.total_accounts||0;
-    $('sRunning').textContent=u.running||0;
-    $('sLive').textContent=u.live_count||0;
-    $('accTag').textContent=(u.accounts||[]).length+'个';
-    $('accBox').innerHTML=(u.accounts||[]).map(a=>{
-      const cls=a.status==='running'?'acc-running':'acc-paused';
-      return `<div class="acc-row">
-        <span class="acc-name">${a.name||a.account_id}</span>
-        <span style="color:var(--sub);font-size:10px">${a.account_id}</span>
-        <span class="acc-status ${cls}">${a.status||'-'}</span>
-        <span style="color:var(--sub);font-size:10px">${a.account_type==='live'?'实盘':'模拟'}</span>
-        <span style="color:var(--sub);font-size:10px">${a.created_at||''}</span>
-        <a class="acc-link" href="/account/${a.account_id}">详情 →</a>
-      </div>`;
-    }).join('')||'<div class="err">暂无账户</div>';
-    $('tick').textContent=new Date().toLocaleTimeString();
-  }catch(e){$('tick').textContent='错误'}
-}
+async function refreshAll(){$('tick').textContent='加载中...';try{const r=await fetch('/api/user/overview');const d=(await r.json()).data||{};$('sTotal').textContent=d.total_accounts||0;$('sRunning').textContent=d.running||0;$('sLive').textContent=d.live_count||0;$('accTag').textContent=(d.accounts||[]).length+'个';$('accBox').innerHTML=(d.accounts||[]).map(a=>{const cls=a.status==='running'?'acc-running':'acc-paused';return'<div class="acc-row"><span class="acc-name">'+(a.name||a.account_id)+'</span><span style="color:#8a94a6;font-size:10px">'+a.account_id+'</span><span class="'+cls+'">'+(a.status||'-')+'</span><span style="color:#8a94a6;font-size:10px">'+(a.account_type==='live'?'实盘':'模拟')+'</span><span style="color:#8a94a6;font-size:10px">'+(a.created_at||'')+'</span><a class="acc-link" href="/account/'+a.account_id+'">详情 →</a></div>'}).join('')||'<div class="err">暂无账户</div>';$('tick').textContent=new Date().toLocaleTimeString()}catch(e){$('tick').textContent='错误'}}
+refreshAll();
+})();
 </script>
-</body>
-</html>
+{% endblock %}
