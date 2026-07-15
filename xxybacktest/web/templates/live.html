@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>实时市场全景</title>
+<title>行情层 · 实时全景</title>
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
 <style>
   :root{--bg:#0f1218;--panel:#171c26;--panel2:#1e2531;--line:#2a3240;--text:#e6ebf2;--sub:#8a94a6;--accent:#4c8dff;--green:#26c281;--red:#ff5d5d;--gold:#f5d547}
@@ -12,29 +12,20 @@
   header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px}
   h1{font-size:19px;font-weight:600}h1 .dot{color:var(--accent)}
   .header-right{display:flex;align-items:center;gap:8px}
-  .btn{background:var(--accent);color:#fff;border:none;border-radius:6px;padding:6px 14px;cursor:pointer;font-size:12px}
-  .btn:hover{opacity:.9}
+  .btn{background:var(--accent);color:#fff;border:none;border-radius:6px;padding:6px 14px;cursor:pointer;font-size:12px}.btn:hover{opacity:.9}
   .navlink{color:var(--sub);font-size:11px;text-decoration:none;margin-left:2px}.navlink:hover{color:var(--accent)}
   .update-time{color:var(--sub);font-size:11px}
-
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:12px}
-  .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
   .mt12{margin-top:12px}
-
   .card{background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden}
   .ch{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line);flex-shrink:0}
-  .ch h3{font-size:12px;font-weight:500}
-  .ch .tag{font-size:10px;color:var(--sub)}
+  .ch h3{font-size:12px;font-weight:500}.ch .tag{font-size:10px;color:var(--sub)}
   .cb{flex:1;min-height:0;overflow:hidden}.cb.pad{padding:10px 14px}.cb.scrl{overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--line) transparent}
   .cb.scrl::-webkit-scrollbar{width:4px}.cb.scrl::-webkit-scrollbar-thumb{background:var(--line);border-radius:2px}
-
-  /* Quote card */
   .quote-grid{display:grid;grid-template-columns:1fr 280px;gap:0}
   .quote-main{padding:16px}
   .quote-head{display:flex;align-items:baseline;gap:10px;margin-bottom:12px}
-  .quote-name{font-size:16px;font-weight:600}
-  .quote-code{font-size:11px;color:var(--sub)}
+  .quote-name{font-size:16px;font-weight:600}.quote-code{font-size:11px;color:var(--sub)}
   .quote-price{font-size:32px;font-weight:700;letter-spacing:1px}
   .quote-change{font-size:14px;margin-left:8px;font-weight:500}
   .up{color:var(--red)}.down{color:var(--green)}
@@ -43,8 +34,6 @@
   .qm-label{font-size:10px;color:var(--sub)}.qm-val{font-size:16px;font-weight:600;margin-top:2px}
   .quote-meta2{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}
   .qm2-item{text-align:center;padding:6px}.qm2-label{font-size:10px;color:var(--sub)}.qm2-val{font-size:13px;font-weight:500}
-
-  /* Order book */
   .ob-panel{padding:12px 14px;border-left:1px solid var(--line);background:var(--panel2);overflow-y:auto;max-height:300px}
   .ob-title{font-size:11px;color:var(--sub);margin-bottom:8px;text-align:center}
   .ob-row{display:flex;align-items:center;padding:2px 0;font-size:11px;font-variant-numeric:tabular-nums}
@@ -53,62 +42,37 @@
   .ob-bar{height:100%;border-radius:2px;min-width:1px;position:absolute;right:0}
   .ob-bar.bid{background:var(--red);opacity:.25}.ob-bar.ask{background:var(--green);opacity:.25}
   .ob-spread{padding:8px 0;text-align:center;font-size:13px;font-weight:600;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin:6px 0}
-
-  /* Index bar */
   .index-bar{display:flex;gap:10px;flex-wrap:wrap;padding:8px 0}
   .idx-item{background:var(--panel2);border-radius:6px;padding:8px 14px;text-align:center;min-width:90px;flex:1}
   .idx-name{font-size:10px;color:var(--sub)}.idx-price{font-size:16px;font-weight:700}.idx-chg{font-size:11px;font-weight:500}
-
-  /* ETF grid */
   .etf-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
   .etf-item{background:var(--panel2);border-radius:6px;padding:8px;text-align:center}
   .etf-name{font-size:11px;font-weight:500}.etf-price{font-size:13px;margin-top:2px}.etf-chg{font-size:11px;font-weight:500;margin-top:1px}
-
-  /* Period tabs */
   .period-tabs{display:flex;gap:4px;padding:6px 14px}
   .ptab{background:var(--panel2);border:1px solid var(--line);color:var(--sub);border-radius:5px;padding:4px 12px;cursor:pointer;font-size:11px}
   .ptab:hover,.ptab.on{background:var(--accent);color:#fff;border-color:var(--accent)}
-
-  /* News */
-  .news-item{padding:8px 0;border-bottom:1px solid var(--line);font-size:11px;line-height:1.5}
-  .news-item:last-child{border-bottom:none}.news-time{color:var(--sub);font-size:10px;margin-right:6px}
-
-  /* Industry */
-  .ind-row{display:flex;align-items:center;padding:6px 0;border-bottom:1px solid var(--line);font-size:11px}
-  .ind-row:last-child{border-bottom:none}.ind-rank{width:20px;color:var(--sub);font-size:10px}
-  .ind-rank.top{color:var(--red);font-weight:700}.ind-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .ind-cnt{color:var(--sub);font-size:10px;min-width:24px;text-align:right}.ind-pct{font-weight:600;min-width:46px;text-align:right;font-size:11px}
-
-  /* Sentiment */
-  .sent-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-bottom:10px}
-  .sent-i{text-align:center;background:var(--panel2);border-radius:6px;padding:8px}.sent-v{font-size:18px;font-weight:700}.sent-l{font-size:10px;color:var(--sub)}
-
-  /* Hot table */
-  .hot-table{width:100%;border-collapse:collapse;font-size:11px}
-  .hot-table td{padding:5px 8px;border-bottom:1px solid var(--line)}.hot-table .hr{text-align:center;color:var(--sub)}
-  .hot-table .hn{font-weight:500}.hot-table .hp{text-align:right}.hot-table .hh{text-align:right;color:var(--sub)}
-
   .loading{text-align:center;color:var(--sub);padding:30px;font-size:12px}
   .loading::before{content:"";display:inline-block;width:12px;height:12px;border:2px solid var(--line);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin-right:6px;vertical-align:middle}
   @keyframes spin{to{transform:rotate(360deg)}}
   .err{text-align:center;color:var(--sub);padding:20px;font-size:11px}
-
-  @media(max-width:1100px){.grid2,.grid3,.grid4{grid-template-columns:1fr}.quote-grid{grid-template-columns:1fr}}
+  @media(max-width:1100px){.grid2{grid-template-columns:1fr}.quote-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <div class="wrap">
 <header>
-  <h1>实时市场全景 <span class="dot">●</span></h1>
+  <h1>📡 行情层 · 实时全景 <span class="dot">●</span></h1>
   <div class="header-right">
     <span class="update-time" id="tick">加载中...</span>
     <button class="btn" onclick="refreshAll()">刷新全部</button>
     <input id="stockCode" value="000001" style="background:var(--panel2);border:1px solid var(--line);color:var(--text);border-radius:5px;padding:5px 10px;font-size:12px;width:110px" placeholder="代码">
     <a class="navlink" href="/">🏠</a>
-    <a class="navlink" href="/live" style="color:var(--accent)">实时</a>
-    <a class="navlink" href="/signals" style="color:var(--gold)">信号</a>
-    <a class="navlink" href="/capital">筹码</a>
-    <a class="navlink" href="/fundamentals">基本面</a>
+    <a class="navlink" href="/market" style="color:var(--gold)">行情</a>
+    <a class="navlink" href="/research">研报</a>
+    <a class="navlink" href="/signals">信号</a>
+    <a class="navlink" href="/capital">资金</a>
+    <a class="navlink" href="/fundamentals">基础</a>
+    <a class="navlink" href="/announcements">公告</a>
     <a class="navlink" href="/factors">因子</a>
   </div>
 </header>
@@ -141,33 +105,14 @@
     <span class="ptab" data-freq="week">周线</span>
     <span class="ptab" data-freq="month">月线</span>
   </div>
-  <div class="cb" id="klineChart" style="height:360px"><div class="loading">查询股票查看K线</div></div>
-</div>
-
-<!-- 信号层1：同花顺热点 + 北向资金 -->
-<div class="grid2 mt12">
-  <div class="card"><div class="ch"><h3>今日强势股 · 题材归因</h3><span class="tag" id="hsTag">同花顺 编辑部</span></div><div class="cb scrl" id="hsBox" style="max-height:360px"><div class="loading">加载中</div></div></div>
-  <div class="card"><div class="ch"><h3>北向资金</h3><span class="tag" id="nbTag">沪/深股通 分钟级</span></div><div class="cb" id="nbBox" style="height:360px"><div class="loading">加载中</div></div></div>
-</div>
-<!-- 信号层2：龙虎榜 + 解禁&概念 -->
-<div class="grid2 mt12">
-  <div class="card"><div class="ch"><h3>全市场龙虎榜</h3><span class="tag" id="dtTag">东财 datacenter</span></div><div class="cb scrl" id="dtBox" style="max-height:340px"><div class="loading">加载中</div></div></div>
-  <div class="card"><div class="ch"><h3>解禁预警 & 概念板块 <span id="lcCode"></span></h3></div><div class="cb scrl" id="lcBox" style="max-height:340px"><div class="loading">加载中</div></div></div>
-</div>
-<!-- 快讯 + 行业 + 打板 + 人气 -->
-<div class="grid2 mt12">
-  <div class="card"><div class="ch"><h3>财联社快讯</h3></div><div class="cb scrl" id="newsBox" style="max-height:340px"><div class="loading">加载中</div></div></div>
-  <div class="card"><div class="ch"><h3>行业热度</h3><span class="tag" id="indSrc"></span></div><div class="cb scrl" id="indBox" style="max-height:340px"><div class="loading">加载中</div></div></div>
-</div>
-<div class="grid2 mt12">
-  <div class="card"><div class="ch"><h3>今日打板</h3></div><div class="cb scrl" id="luBox" style="max-height:320px"><div class="loading">加载中</div></div></div>
-  <div class="card"><div class="ch"><h3>人气榜 TOP12</h3></div><div class="cb scrl" id="hotBox" style="max-height:320px"><div class="loading">加载中</div></div></div>
+  <div class="cb" id="klineChart" style="height:400px"><div class="loading">查询股票查看K线</div></div>
 </div>
 </div>
 
 <script>
 // ═══════════════════════════════════════════
-// 工具
+// 行情层 — 只加载: 指数/ETF/报价/盘口/K线
+// 信号→/signals  资金→/capital  基础→/fundamentals  公告→/announcements
 // ═══════════════════════════════════════════
 const $ = s => document.getElementById(s);
 let klineChart = null, curPeriod = 'day';
@@ -180,13 +125,11 @@ async function fetchJSON(url) {
 function updown(v) { return v >= 0 ? 'up' : 'down'; }
 function sign(v) { return v >= 0 ? '+' : ''; }
 
-// ═══════════════════════════════════════════
-// 指数
-// ═══════════════════════════════════════════
+// ── 指数 ──
 async function loadIndex() {
   const box = $('idxBar');
   try {
-    const j = await fetchJSON('/api/live/index');
+    const j = await fetchJSON('/api/market/index');
     if (j.error || !j.data) { box.innerHTML = '<div class="err">-</div>'; return; }
     box.innerHTML = j.data.map(d =>
       `<div class="idx-item"><div class="idx-name">${d.name}</div><div class="idx-price">${d.price.toFixed(2)}</div><div class="idx-chg ${updown(d.change_pct)}">${sign(d.change_pct)}${d.change_pct.toFixed(2)}%</div></div>`
@@ -194,13 +137,11 @@ async function loadIndex() {
   } catch(e) { box.innerHTML = '<div class="err">-</div>'; }
 }
 
-// ═══════════════════════════════════════════
-// ETF
-// ═══════════════════════════════════════════
+// ── ETF ──
 async function loadETF() {
   const box = $('etfGrid');
   try {
-    const j = await fetchJSON('/api/live/etf');
+    const j = await fetchJSON('/api/market/etf');
     if (j.error || !j.data) { box.innerHTML = '<div class="err">-</div>'; return; }
     box.innerHTML = j.data.map(d =>
       `<div class="etf-item"><div class="etf-name">${d.name||d.code}</div><div class="etf-price">${d.price.toFixed(3)}</div><div class="etf-chg ${updown(d.change_pct)}">${sign(d.change_pct)}${d.change_pct.toFixed(2)}%</div></div>`
@@ -208,16 +149,14 @@ async function loadETF() {
   } catch(e) { box.innerHTML = '<div class="err">-</div>'; }
 }
 
-// ═══════════════════════════════════════════
-// 个股报价 + 盘口
-// ═══════════════════════════════════════════
+// ── 个股报价 + 盘口 ──
 let curCode = $('stockCode').value;
 
 async function loadQuote() {
   curCode = $('stockCode').value.trim() || '000001';
   const qb = $('quoteBox'), ob = $('obBox');
   try {
-    const j = await fetchJSON('/api/live/quote?code=' + curCode);
+    const j = await fetchJSON('/api/market/quote?code=' + curCode);
     $('quoteTime').textContent = j.time || '';
     if (j.error || !j.data) { qb.innerHTML = '<div class="err">无数据</div>'; return; }
     const d = j.data;
@@ -249,8 +188,6 @@ async function loadQuote() {
         <div class="qm2-item"><div class="qm2-label">成交额</div><div class="qm2-val">${(d.amount_wan||0).toFixed(0)}万</div></div>
         <div class="qm2-item"><div class="qm2-label">涨跌停</div><div class="qm2-val">${(d.limit_down||0).toFixed(2)} / <span style="color:var(--red)">${(d.limit_up||0).toFixed(2)}</span></div></div>
       </div>`;
-
-    // 盘口 (尝试 mootdx，失败则降级显示)
     loadOrderBook();
   } catch(e) { qb.innerHTML = '<div class="err">加载失败</div>'; }
 }
@@ -258,7 +195,7 @@ async function loadQuote() {
 async function loadOrderBook() {
   const ob = $('obBox');
   try {
-    const j = await fetchJSON('/api/live/orderbook?code=' + curCode);
+    const j = await fetchJSON('/api/market/orderbook?code=' + curCode);
     if (j.error || !j.data || j.note === 'market_closed') {
       ob.innerHTML = '<div class="err" style="padding-top:40px">盘后无实时盘口<br><span style="font-size:10px;color:var(--sub)">(mootdx TCP 7709 仅交易时段可用)</span></div>';
       return;
@@ -266,16 +203,13 @@ async function loadOrderBook() {
     const d = j.data;
     const maxVol = Math.max(...d.asks.map(a=>a.vol), ...d.bids.map(b=>b.vol), 1);
     let html = '<div class="ob-title">五档盘口</div>';
-    // Asks (reverse: 卖5→卖1)
     for (let i = 4; i >= 0; i--) {
       const a = d.asks[i] || {price:0, vol:0};
       html += `<div class="ob-row"><span class="ob-p" style="color:var(--green)">${a.price.toFixed(2)}</span><div class="ob-bar-wrap"><div class="ob-bar ask" style="width:${Math.max(1,a.vol/maxVol*100)}%"></div></div><span class="ob-v">${a.vol}</span></div>`;
     }
-    // Spread
     const bid1 = d.bids[0]?.price || 0, ask1 = d.asks[0]?.price || 0;
     const spread = ask1 - bid1;
     html += `<div class="ob-spread"><span style="color:var(--sub)">${d.price.toFixed(2)}</span> 价差 ${spread.toFixed(2)}</div>`;
-    // Bids
     for (let i = 0; i < 5; i++) {
       const b = d.bids[i] || {price:0, vol:0};
       html += `<div class="ob-row"><span class="ob-p" style="color:var(--red)">${b.price.toFixed(2)}</span><div class="ob-bar-wrap"><div class="ob-bar bid" style="width:${Math.max(1,b.vol/maxVol*100)}%"></div></div><span class="ob-v">${b.vol}</span></div>`;
@@ -285,42 +219,30 @@ async function loadOrderBook() {
   } catch(e) { ob.innerHTML = '<div class="err">盘口不可用</div>'; }
 }
 
-// ═══════════════════════════════════════════
-// K线 (本地数据 day/week/month + TDX分钟线)
-// ═══════════════════════════════════════════
+// ── K线 ──
 async function loadKline(period) {
   if (period) curPeriod = period;
   const dom = $('klineChart');
   dom.innerHTML = '<div class="loading">加载中</div>';
-
   const minuteFreqs = ['1m','5m','15m','30m','60m'];
   const isMinute = minuteFreqs.includes(curPeriod);
-  // 分钟线走 mootdx
   let url = isMinute
-    ? `/api/live/tdx_bars?code=${curCode}&freq=${curPeriod}`
-    : `/api/live/kline?code=${curCode}&limit=300`;
-
+    ? `/api/market/tdx_bars?code=${curCode}&freq=${curPeriod}`
+    : `/api/market/kline?code=${curCode}&limit=300`;
   try {
     const j = await fetchJSON(url);
     if (j.error || !j.data) { dom.innerHTML = '<div class="err">'+(j.error||'无数据')+'</div>'; return; }
     const d = j.data;
-
-    // TDX minutes return "market_closed" note when no data
     if (j.note === 'market_closed_or_no_data') {
       dom.innerHTML = '<div class="err" style="padding:60px">分钟K线仅交易时段可用（9:30-15:00）<br><span style="font-size:10px;color:var(--sub)">日/周/月线走本地 daily_bar 不受影响</span></div>';
       return;
     }
-
-    // Unified: handle both bars (TDX) and klines (local db)
     const bars = d.bars || d.klines;
     if (!bars || !bars.length) { dom.innerHTML = '<div class="err">无K线数据</div>'; return; }
-
     $('klineSrc').textContent = isMinute ? 'mootdx TCP 7709' : '本地 daily_bar';
     const dates = bars.map(k => k.date);
     const ohlc = bars.map(k => [k.open, k.close, k.low, k.high]);
     const vols = bars.map(k => k.volume);
-
-    // Fail gracefully if echarts not loaded (CDN blocked)
     if (typeof echarts === 'undefined') {
       let html = '<table style="width:100%;font-size:11px;border-collapse:collapse"><tr><th>日期</th><th>开</th><th>高</th><th>低</th><th>收</th><th>量</th></tr>';
       for (let i = Math.max(0, bars.length-20); i < bars.length; i++) {
@@ -331,12 +253,10 @@ async function loadKline(period) {
       dom.innerHTML = '<div style="padding:10px 14px;max-height:340px;overflow-y:auto">'+html+'</div>';
       return;
     }
-
     const series = [{
       name: 'K', type: 'candlestick', data: ohlc,
       itemStyle: { color: '#ff5d5d', color0: '#26c281', borderColor: '#ff5d5d', borderColor0: '#26c281' }
     }];
-
     const hasMA = !isMinute && bars[0].ma5 !== undefined && bars[0].ma5 !== null;
     if (hasMA) {
       series.push({ name: 'MA5', type:'line', data: bars.map(k=>k.ma5), smooth:true, symbol:'none', lineStyle:{width:1,color:'#f5d547'} });
@@ -344,12 +264,10 @@ async function loadKline(period) {
       series.push({ name: 'MA20', type:'line', data: bars.map(k=>k.ma20), smooth:true, symbol:'none', lineStyle:{width:1,color:'#fd79a8'} });
       series.push({ name: 'MA60', type:'line', data: bars.map(k=>k.ma60), smooth:true, symbol:'none', lineStyle:{width:1,color:'#a29bfe'} });
     }
-
     series.push({
       name: '量', type:'bar', data: vols, xAxisIndex:1, yAxisIndex:1,
       itemStyle: { color: p => ohlc[p.dataIndex][1] >= ohlc[p.dataIndex][0] ? '#ff5d5d44' : '#26c28144' }
     });
-
     try {
       if (klineChart) klineChart.dispose();
       klineChart = echarts.init(dom);
@@ -376,7 +294,7 @@ async function loadKline(period) {
   } catch(e) { dom.innerHTML = '<div class="err">加载失败: '+e.message+'</div>'; }
 }
 
-// Period tab click
+// Period tabs
 document.getElementById('periodTabs').addEventListener('click', e => {
   if (!e.target.classList.contains('ptab')) return;
   document.querySelectorAll('.ptab').forEach(t => t.classList.remove('on'));
@@ -384,218 +302,22 @@ document.getElementById('periodTabs').addEventListener('click', e => {
   loadKline(e.target.dataset.freq);
 });
 
-// ═══════════════════════════════════════════
-// 快讯
-// ═══════════════════════════════════════════
-async function loadNews() {
-  const box = $('newsBox');
-  try {
-    const j = await fetchJSON('/api/live/news');
-    if (j.error || !j.data?.length) { box.innerHTML = '<div class="err">暂无快讯</div>'; return; }
-    box.innerHTML = j.data.map(n => `<div class="news-item"><span class="news-time">${(n.time||'').slice(-8)}</span>${n.title}</div>`).join('');
-  } catch(e) { box.innerHTML = '<div class="err">-</div>'; }
-}
-
-// ═══════════════════════════════════════════
-// 行业
-// ═══════════════════════════════════════════
-async function loadIndustry() {
-  const box = $('indBox');
-  try {
-    const j = await fetchJSON('/api/live/industry');
-    if (j.error || !j.data) { box.innerHTML = '<div class="err">暂无数据</div>'; return; }
-    $('indSrc').textContent = j.data.source || '';
-    const top = j.data.top || [];
-    if (!top.length) { box.innerHTML = '<div class="err">暂无数据</div>'; return; }
-    const mx = Math.max(...top.map(r=>Math.abs(r.change_pct||0),Math.abs(r.count||0)),1);
-    box.innerHTML = top.map((r,i) => {
-      const p = r.change_pct||0, cls = updown(p);
-      return `<div class="ind-row"><span class="ind-rank${i<3?' top':''}">${r.rank}</span><span class="ind-name">${r.name}</span>${r.count?`<span class="ind-cnt">${r.count}只</span>`:''}<span class="ind-pct ${cls}">${p?sign(p)+p+'%':''}</span></div>`;
-    }).join('');
-  } catch(e) { box.innerHTML = '<div class="err">-</div>'; }
-}
-
-// ═══════════════════════════════════════════
-// 打板
-// ═══════════════════════════════════════════
-async function loadLimitUp() {
-  const box = $('luBox');
-  try {
-    const j = await fetchJSON('/api/live/limit-up');
-    if (j.error || !j.data) { box.innerHTML = '<div class="err">非交易日或无数据</div>'; return; }
-    const s = j.data.sentiment||{}, zt = j.data.top_stocks||[];
-    let h = `<div class="sent-grid">
-      <div class="sent-i"><div class="sent-v" style="color:#ff5d5d">${s.zt_count||0}</div><div class="sent-l">涨停</div></div>
-      <div class="sent-i"><div class="sent-v" style="color:#faad14">${s.zb_count||0}</div><div class="sent-l">炸板</div></div>
-      <div class="sent-i"><div class="sent-v" style="color:#26c281">${s.dt_count||0}</div><div class="sent-l">跌停</div></div>
-      <div class="sent-i"><div class="sent-v">${s.break_rate||0}%</div><div class="sent-l">炸板率</div></div>
-    </div>`;
-    if (s.max_height) h += `<div style="font-size:11px;margin-bottom:4px">最高 <b>${s.max_height}</b> 连板</div>`;
-    if (zt.length) {
-      h += '<div style="font-size:10px;color:var(--sub);margin:6px 0 2px">涨停明细</div>';
-      h += zt.map(x => `<div style="font-size:10px;padding:2px 0;border-bottom:1px solid var(--line)"><a href="/live?code=${x.code||''}" style="color:var(--text);text-decoration:none">${x.name}</a> <span style="color:var(--sub)">${x.zt_stat||''} ${x.industry||''}</span></div>`).join('');
-    }
-    box.innerHTML = h;
-  } catch(e) { box.innerHTML = '<div class="err">-</div>'; }
-}
-
-// ═══════════════════════════════════════════
-// 人气
-// ═══════════════════════════════════════════
-async function loadHot() {
-  const box = $('hotBox');
-  try {
-    const j = await fetchJSON('/api/live/hot');
-    if (j.error || !j.data?.length) { box.innerHTML = '<div class="err">暂无数据</div>'; return; }
-    box.innerHTML = '<table class="hot-table">'+j.data.map(h =>
-      `<tr><td class="hr">#${h.rank||'?'}</td><td class="hn">${h.name}</td><td class="hp ${updown(h.pct||0)}">${sign(h.pct||0)}${(h.pct||0).toFixed(1)}%</td><td class="hh">${((h.heat||0)/10000).toFixed(0)}万</td></tr>`
-    ).join('')+'</table>';
-  } catch(e) { box.innerHTML = '<div class="err">-</div>'; }
-}
-
-// ═══════════════════════════════════════════
-// 信号层1：同花顺热点 + 题材归因
-// ═══════════════════════════════════════════
-async function loadHotStocks() {
-  const box = $('hsBox');
-  try {
-    const j = await fetchJSON('/api/live/hot_stocks');
-    if (j.error || !j.data?.length) { box.innerHTML = '<div class="err">暂无数据</div>'; return; }
-    $('hsTag').textContent = '同花顺 ' + j.data.length + '只';
-    box.innerHTML = j.data.map(r =>
-      `<div style="padding:6px 0;border-bottom:1px solid var(--line);font-size:11px;line-height:1.4">
-        <span style="font-weight:600">${r.name||''}</span>
-        <span style="color:var(--sub);font-size:10px"><a href="/live?code=${r.code||''}" style="color:var(--accent);text-decoration:none">${r.code||''}</a></span>
-        <span class="${updown(r.change_pct)}" style="float:right;font-weight:500">${sign(r.change_pct)}${r.change_pct.toFixed(1)}%</span>
-        <br><span style="color:var(--accent);font-size:11px">${r.reason||''}</span>
-        <span style="color:var(--sub);font-size:10px;float:right">换手${(r.turnover||0).toFixed(1)}%</span>
-      </div>`
-    ).join('');
-  } catch(e) { box.innerHTML = '<div class="err">-</div>'; }
-}
-
-// ═══════════════════════════════════════════
-// 信号层1：北向资金
-// ═══════════════════════════════════════════
-let nbChart = null;
-async function loadNorthbound() {
-  const box = $('nbBox');
-  try {
-    const j = await fetchJSON('/api/live/northbound');
-    if (j.error || !j.data) { box.innerHTML = '<div class="err">暂无数据</div>'; return; }
-    const d = j.data;
-    const pts = d.realtime || [];
-    $('nbTag').textContent = '沪/深股通 ' + (d.total_points || pts.length) + '个时间点';
-    if (!pts.length) { box.innerHTML = '<div class="err">盘后无实时数据<br><span style="font-size:10px;color:var(--sub)">近10日历史: ' + JSON.stringify((d.history||[]).slice(-3).map(h=>h.date+' H:'+(h.hgt||0).toFixed(1)+' S:'+(h.sgt||0).toFixed(1))) + '</span></div>'; return; }
-    if (typeof echarts === 'undefined') { box.innerHTML = '<div class="pad" style="font-size:10px">' + pts.slice(-10).map(p => p.time + ' HGT:' + p.hgt + ' SGT:' + p.sgt).join('<br>') + '</div>'; return; }
-    const times = pts.map(p => p.time);
-    const hgt = pts.map(p => p.hgt);
-    const sgt = pts.map(p => p.sgt);
-    if (nbChart) nbChart.dispose();
-    nbChart = echarts.init(box);
-    nbChart.setOption({
-      backgroundColor: 'transparent',
-      tooltip: { trigger: 'axis' },
-      legend: { top: 4, textStyle: { fontSize: 10, color: '#8a94a6' }, data: ['沪股通','深股通'] },
-      grid: { left: '8%', right: '3%', top: '12%', bottom: '8%' },
-      xAxis: { type: 'category', data: times, axisLabel: { fontSize: 8, color: '#8a94a6', interval: 29 } },
-      yAxis: { type: 'value', axisLabel: { fontSize: 9, color: '#8a94a6', formatter: '{value}亿' }, splitLine: { lineStyle: { color: '#2a3240' } } },
-      series: [
-        { name: '沪股通', type: 'line', data: hgt, symbol: 'none', lineStyle: { width: 1.5, color: '#ff5d5d' } },
-        { name: '深股通', type: 'line', data: sgt, symbol: 'none', lineStyle: { width: 1.5, color: '#4c8dff' } },
-      ],
-      dataZoom: [{ type: 'inside', start: 0, end: 100 }],
-    });
-  } catch(e) { box.innerHTML = '<div class="err">' + e.message + '</div>'; }
-}
-
-// ═══════════════════════════════════════════
-// 信号层2：全市场龙虎榜
-// ═══════════════════════════════════════════
-async function loadDragonTiger() {
-  const box = $('dtBox');
-  try {
-    const j = await fetchJSON('/api/live/dragon_tiger');
-    if (j.error || !j.data) { box.innerHTML = '<div class="err">非交易日或无数据</div>'; return; }
-    const d = j.data;
-    $('dtTag').textContent = d.date + ' 共' + d.total_records + '条';
-    const stocks = d.stocks || [];
-    if (!stocks.length) { box.innerHTML = '<div class="err">' + (d.note || '今日无龙虎榜数据') + '</div>'; return; }
-    box.innerHTML = stocks.slice(0, 10).map(s =>
-      `<div style="padding:6px 0;border-bottom:1px solid var(--line);font-size:11px;line-height:1.4">
-        <span style="font-weight:600">${s.name}</span> <span style="color:var(--sub)"><a href="/live?code=${s.code||''}" style="color:var(--accent);text-decoration:none">${s.code}</a></span>
-        <span class="${updown(s.change_pct)}" style="float:right;font-weight:500">${sign(s.change_pct)}${s.change_pct}%</span>
-        <br><span style="color:var(--sub);font-size:10px">${s.reason||''}</span>
-        <span style="float:right;font-size:11px">净买<span class="${updown((s.net_buy_wan||0))}">${(s.net_buy_wan||0)>0?'+':''}${(s.net_buy_wan||0).toFixed(0)}万</span></span>
-      </div>`
-    ).join('');
-  } catch(e) { box.innerHTML = '<div class="err">-</div>'; }
-}
-
-// ═══════════════════════════════════════════
-// 信号层2：解禁预警 + 概念板块
-// ═══════════════════════════════════════════
-async function loadLockupConcept() {
-  const box = $('lcBox');
-  try {
-    const [lk, cp] = await Promise.all([
-      fetchJSON('/api/live/lockup?code=' + curCode),
-      fetchJSON('/api/live/concept?code=' + curCode),
-    ]);
-    $('lcCode').textContent = '(' + curCode + ')';
-    let html = '';
-    // 解禁
-    if (lk.data) {
-      const up = lk.data.upcoming || [];
-      const hist = lk.data.history || [];
-      html += '<div style="font-size:11px;font-weight:500;margin-bottom:6px;color:var(--gold)">未来90天解禁预警</div>';
-      if (up.length) {
-        html += up.map(u =>
-          `<div style="font-size:11px;padding:3px 0;border-bottom:1px solid var(--line)">
-            <span style="color:var(--red)">${u.date||''}</span> ${u.type||''}<br>
-            <span style="color:var(--sub);font-size:10px">${(u.shares||0).toFixed(0)}万股 实际可流通${(u.able_shares||0).toFixed(0)}万股 占比${((u.ratio||0)*100).toFixed(1)}%</span>
-          </div>`
-        ).join('');
-        html += '<div style="font-size:10px;color:var(--sub);margin-top:4px">历史' + hist.length + '批解禁</div>';
-      } else {
-        html += '<div style="font-size:11px;color:var(--green);margin-bottom:8px">✅ 未来90天无待解禁</div>';
-      }
-    }
-    // 概念板块
-    if (cp.data && cp.data.concept_tags) {
-      html += '<div style="font-size:11px;font-weight:500;margin:10px 0 4px;color:var(--accent)">概念板块 (' + cp.data.total + '个)</div>';
-      html += '<div style="display:flex;flex-wrap:wrap;gap:4px;font-size:10px">' +
-        cp.data.concept_tags.slice(0, 15).map(t => '<span style="background:var(--panel2);padding:2px 7px;border-radius:4px">'+t+'</span>').join('') +
-        '</div>';
-    }
-    box.innerHTML = html || '<div class="err">暂无数据</div>';
-  } catch(e) { box.innerHTML = '<div class="err">-</div>'; }
-}
-
-// ═══════════════════════════════════════════
-// 全局刷新
-// ═══════════════════════════════════════════
+// ── 刷新 ──
 async function refreshAll() {
   $('tick').textContent = '刷新中...';
-  await Promise.all([
-    loadIndex(), loadETF(), loadQuote(), loadKline(),
-    loadHotStocks(), loadNorthbound(),
-    loadDragonTiger(), loadLockupConcept(),
-    loadNews(), loadIndustry(), loadLimitUp(), loadHot()
-  ]);
+  await Promise.allSettled([loadIndex(), loadETF(), loadQuote(), loadKline()]);
   $('tick').textContent = '已更新 ' + new Date().toLocaleTimeString();
 }
 
-// 回车触发查询
 $('stockCode').addEventListener('keydown', e => { if (e.key==='Enter') { loadQuote(); loadKline(); } });
 
-// Init - read URL param first
+// Init
 (function init(){
   const params=new URLSearchParams(window.location.search);
   const c=params.get('code');
   if(c&&c.match(/^\d{6}/)){
     curCode=c;$('stockCode').value=c;
-    document.title=c+' - 实时全景';
+    document.title=c+' - 行情层';
   }
   refreshAll();
 })();

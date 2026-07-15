@@ -171,7 +171,8 @@
       "Bash(start http://localhost:5000)",
       "Bash(start msedge *)",
       "Bash(start chrome *)",
-      "Bash(mkdir -p d:/xxybacktest-master/.claude/agents)"
+      "Bash(mkdir -p d:/xxybacktest-master/.claude/agents)",
+      "Bash(git commit *)"
     ],
     "additionalDirectories": [
       "d:\\xxybacktest-master\\xxybacktest\\agents",
