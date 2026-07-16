@@ -278,7 +278,9 @@
       "Bash(nohup python -u -c \"from xxybacktest.web.app import create_app; create_app\\(\\).run\\(host='0.0.0.0', port=5000, debug=False\\)\")",
       "Bash(echo \"pid=$!\")",
       "Bash(nohup python -u run_simulation.py)",
-      "Bash(start http://localhost:5000/)"
+      "Bash(start http://localhost:5000/)",
+      "Bash(docker --version)",
+      "Bash(powershell -Command \"iwr https://fly.io/install.ps1 -useb | iex\")"
     ],
     "additionalDirectories": [
       "d:\\xxybacktest-master\\xxybacktest\\agents",

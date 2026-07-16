@@ -189,5 +189,6 @@ def main():
     from xxybacktest.web.app import create_app
     from waitress import serve
     app = create_app()
-    print(f"[Web] waitress 生产模式: http://localhost:5000")
-    serve(app, host="0.0.0.0", port=5000, threads=8)
+    port = int(os.environ.get("PORT", 5000))
+    print(f"[Web] waitress 生产模式: http://0.0.0.0:{port}")
+    serve(app, host="0.0.0.0", port=port, threads=4)
