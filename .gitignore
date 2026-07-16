@@ -4,11 +4,8 @@ __pycache__/
 *.pyo
 .DS_Store
 
-# Data & cache
-data/daily_bar/
-data/stock_status/
+# Data & cache (部署所需的数据不在此列)
 data/index_bar/
-data/trading_days/
 data/basic_info/
 data/valuation/
 data/dividend/
@@ -22,6 +19,7 @@ data/news_sentiment/
 data/news_sentiment_cache/
 *.parquet
 !tests/**/*.parquet
+!data/**/*.parquet
 
 # IDE
 .vscode/

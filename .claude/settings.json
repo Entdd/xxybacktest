@@ -280,7 +280,11 @@
       "Bash(nohup python -u run_simulation.py)",
       "Bash(start http://localhost:5000/)",
       "Bash(docker --version)",
-      "Bash(powershell -Command \"iwr https://fly.io/install.ps1 -useb | iex\")"
+      "Bash(powershell -Command \"iwr https://fly.io/install.ps1 -useb | iex\")",
+      "Bash(gh auth *)",
+      "WebFetch(domain:github.com)",
+      "Bash(curl -s https://api.github.com/users/ENTdd)",
+      "Bash(git ls-tree *)"
     ],
     "additionalDirectories": [
       "d:\\xxybacktest-master\\xxybacktest\\agents",
