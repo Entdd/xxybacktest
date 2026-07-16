@@ -269,7 +269,16 @@
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5000/account)",
       "Bash(curl -s http://localhost:5000/api/accounts)",
       "Bash(curl -s http://localhost:5000/account/sim_20260715_175604_516bfb)",
-      "Bash(start http://localhost:5000/account/sim_20260715_175604_516bfb)"
+      "Bash(start http://localhost:5000/account/sim_20260715_175604_516bfb)",
+      "Bash(nohup python -c \"from xxybacktest.web.app import create_app; create_app\\(\\).run\\(host='0.0.0.0', port=5000\\)\")",
+      "Bash(echo \"started pid=$!\")",
+      "Bash(cat /tmp/flask.log)",
+      "Bash(python -c \"from xxybacktest.web.app import create_app; print\\('import ok'\\)\")",
+      "Bash(timeout 8 python -c \"from xxybacktest.web.app import create_app; app = create_app\\(\\); print\\('Flask starting...'\\); app.run\\(host='0.0.0.0', port=5000, debug=False\\)\")",
+      "Bash(nohup python -u -c \"from xxybacktest.web.app import create_app; create_app\\(\\).run\\(host='0.0.0.0', port=5000, debug=False\\)\")",
+      "Bash(echo \"pid=$!\")",
+      "Bash(nohup python -u run_simulation.py)",
+      "Bash(start http://localhost:5000/)"
     ],
     "additionalDirectories": [
       "d:\\xxybacktest-master\\xxybacktest\\agents",

@@ -185,7 +185,9 @@ def main():
     print("Web 界面: http://localhost:5000")
     print("=" * 50)
 
-    # 启动 Flask（主线程，阻塞）
+    # 启动 Flask（waitress 生产级 WSGI，不会随会话结束自动挂）
     from xxybacktest.web.app import create_app
+    from waitress import serve
     app = create_app()
-    app.run(host="0.0.0.0", port=5000, debug=False, threaded=True)
+    print(f"[Web] waitress 生产模式: http://localhost:5000")
+    serve(app, host="0.0.0.0", port=5000, threads=8)
